@@ -665,8 +665,14 @@ Makes it all look a bit nicer, I hate looking at asterisks.
 ** Exporting options
 One of the best things about org is the ability to export your file to many formats.
 Here is how we add more of them!
+*** Twitter Bootstrap
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
+    :ensure t)
+#+END_SRC
+*** HTML5 Slide
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-html5slide
     :ensure t)
 #+END_SRC
 * Diminishing modes
