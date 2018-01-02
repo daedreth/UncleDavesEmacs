@@ -498,6 +498,32 @@ I like M-s for it, same as C-s is for moving by searching string, now M-s can be
     :bind
       ("M-s" . avy-goto-char))
 #+END_SRC
+* Text manipulation
+Here I shall collect self-made functions that make editing text easier.
+** Improved kill-word
+Why on earth does a function called =kill-word= not .. kill a word.
+It instead deletes characters from your cursors position to the end of the word,
+let's make a quick fix and bind it properly.
+#+BEGIN_SRC emacs-lisp
+  (defun kill-inner-word ()
+    "Kills the entire word your cursor is in. Equivalent to 'ciw' in vim."
+    (interactive)
+    (backward-word)
+    (kill-word 1))
+  (global-set-key (kbd "C-c C-w") 'kill-inner-word)
+#+END_SRC
+** Copy a line
+Regardless of where your cursor is, this quickly copies a line.
+#+BEGIN_SRC emacs-lisp
+  (defun copy-whole-line ()
+    "Copies a line without regard for cursor position."
+    (interactive)
+    (save-excursion
+      (beginning-of-line)
+      (kill-line)
+      (yank)))
+  (global-set-key (kbd "C-c C-l") 'copy-whole-line)
+#+END_SRC
 * Minor conveniences
 Emacs is at it's best when it just does things for you, shows you the way so to speak.
 This can be best achieved using a number of small extensions. While on their own they might not be very
