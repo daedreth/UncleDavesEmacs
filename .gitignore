@@ -1,0 +1,16 @@
+*.html
+*.eld
+*.dat
+*ido*
+*.html
+*.pdf
+*.tex
+
+snippets
+config.el
+recentf
+smex-items
+tramp
+emms
+auto-save-list
+elpa

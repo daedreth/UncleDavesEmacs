@@ -1,0 +1,739 @@
+#+STARTUP: overview
+#+TITLE: Uncle Dave's Emacs
+#+CREATOR: Dawid 'daedreth' Eckert
+#+OPTIONS: toc:nil
+* Installation
+** Quick Installation
+=git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
+
+Keep in mind that you should remove your own ~/.emacs and your ~/.emacs.d
+prior to cloning this configuration. The next time you launch Emacs (and I recommend
+launching emacs in the tty for the first time) it's going to download a good amount
+of packages and configure them for you, you might see warnings and errors being
+displayed as well, those are safe to ignore as long as you relaunch emacs and
+see none.
+
+The configuration, much like emacs is self documented, I highly recommend reading
+through my ramblings in their entirety.
+** Less Quick Installation
+If you have a properly set up and working installation of =use-package=, you can
+easily pick out bits and pieces from this configuration, paste them into yours
+and expect them to work.
+
+Every category and subcategory are explained, more or less, besides I recommend
+the =try= package to experiment with packages without commitment.
+** Even Less Quick Installation
+If you do not have a working configuration, the first step necessary is bootstrapping
+=use-package=, potentially a theme and a font if you so desire.
+For instructions on how to do it, refer to =~/.emacs.d/init.el=.
+* Dependencies for:
+** EXWM
+Since we are going to use emacs as our window manager, it would be nice to have some external software to make our life easier.
+*** From the package manager:
+- =xorg-server=, for obvious reasons.
+- A browser (sadly, the built in xwidgets-webkit thingie is unreliable)
+- =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
+- A composite manager (highly recommended, I personally use =compton=)
+- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice)
+- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=
+**** Optional
+- =noto-cjk=, for all the fonts imaginable.
+** TRAMP
+*** From the package manager:
+- =sudo=, properly configured for your user
+** Python
+One liner to install all the dependencies for Elpy
+#+BEGIN_SRC shell
+pip install jedi flake8 autopep8
+#+END_SRC
+** EMMS
+*** From the package manager:
+- =mplayer= since we are going to be using EMMS for music and video playback, MPlayer is necessary and the recommended backend.
+- =mpv= if you prefer it over mplayer for video playback
+*** From emms:
+If you'd like for EMMS to correctly display file metadata, here's a few steps to do it
+
+- Install =taglib= via your distributions package manager
+
+- Download and compile the necessary executable
+#+BEGIN_SRC bash
+git clone git://git.sv.gnu.org/emms.git
+cd emms
+make emms-print-metadata
+sudo cp src/emms-print-metadata /usr/bin/emms-print-metadata
+#+END_SRC
+If you so desire, you can copy the executable into anywhere within your =$PATH=, =/usr/bin= is just my prefered directory.
+
+* Some notes
+** On use-package some more
+
+We utilize use-package to handle downloading and configuring other packages painlessly.
+With =init.el= written the way it is, emacs checks for the presence of =use-package=
+on launch and downloads it and installs if necessary.
+
+** On the format of the configuration
+
+As you may have noticed, as you scroll down my bit of prose, this is the configuration file itself.
+This configuration is written in =org-mode=, which is a great emacs package and a great markup language.
+On launch, this file is being sourced into =~/.emacs.d/init.el=, the prose is being automatically
+stripped (as to not affect performance) and the remaining .el file is executed.
+
+This is also the reason why your org-mode configuration file is never called =init.org=.
+
+** On the use case of this configuration
+
+This entire config is meant to be used as a full on desktop environment, it is tailored to sit on top of xorg and be awesome.
+It is perfectly possible to use it without exwm and emms, as a regular emacs config, just make sure to delete the unwanted sections.
+
+** On the keybindings
+
+I do my best to not pollute keymaps with my own keybindings. Most of the bindings I defined myself utilize the Super key (noted as =s-=).
+This is the least used modifier key together with Shift (noted as =S-=), thus using those, chances are all the bindings you already know
+and love are going to work flawlessly
+* Basic Interface Settings
+These are setting that do not depend on packages and are built-in enhancements to the UI.
+** Looks
+*** Remove lame startup screen
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+*** Disable menus and scrollbars
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+#+END_SRC
+*** Disable bell
+#+BEGIN_SRC emacs-lisp
+(setq ring-bell-function 'ignore)
+#+END_SRC
+*** Highligh current line if using the GUI version of emacs.
+#+BEGIN_SRC emacs-lisp
+(when window-system (global-hl-line-mode t))
+#+END_SRC
+*** Show pretty symbols (lambdas etc.) if using GUI.
+#+BEGIN_SRC emacs-lisp
+(when window-system (global-prettify-symbols-mode t))
+#+END_SRC
+
+** Functionality
+*** Disable backups and auto-saves
+I don't use either, you might want to turn those from =nil= to =t= if you do.
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+*** Change yes-or-no questions into y-or-n questions
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+* Window Manager
+** exwm
+*** Installation
+#+BEGIN_SRC emacs-lisp
+  (use-package exwm
+    :ensure t
+    :config
+      (require 'exwm-config)
+      (exwm-config-default))
+#+END_SRC
+*** Keybindings
+If you are wondering why I am not utilizing use-package for the bindings,
+allow me to tell you about slight bugs that occur only when dealing with exwm bindings.
+TL;DR: It destroys the entire configuration, nothing works and all hell breaks loose.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "s-k") 'exwm-workspace-delete)
+  (global-set-key (kbd "s-w") 'exwm-workspace-swap)
+#+END_SRC
+*** XF86 Button for non-emacs buffers
+By default, these don't work, this makes sure they do, adding them to exwm-input-prefix-keys.
+#+BEGIN_SRC emacs-lisp
+  (dolist (k '(XF86AudioLowerVolume
+               XF86AudioRaiseVolume
+               XF86PowerOff
+               XF86AudioMute
+               XF86AudioPlay
+               XF86AudioStop
+               XF86AudioPrev
+               XF86AudioNext
+               XF86ScreenSaver
+               XF68Back
+               XF86Forward))
+    (cl-pushnew k exwm-input-prefix-keys))
+#+END_SRC
+
+** Launchers
+Since I do not use a GUI launcher and do not have an external one like dmenu or rofi,
+I figured the best way to launch my most used applications would be direct emacsy
+keybindings.
+*** Functions to start processes
+I guess this goes without saying but you absolutely have to change the arguments
+to suit the software that you are using. What good is a launcher for discord if you don't use it at all.
+#+BEGIN_SRC emacs-lisp
+  (defun exwm-async-run (name)
+    (interactive)
+    (start-process name nil name))
+
+  (defun daedreth/launch-discord ()
+    (interactive)
+    (exwm-async-run "discord"))
+
+  (defun daedreth/launch-browser ()
+    (interactive)
+    (exwm-async-run "qutebrowser"))
+
+  (defun daedreth/shutdown ()
+    (interactive)
+    (start-process "halt" nil "sudo" "halt"))
+#+END_SRC
+
+*** Keybindings to start processes
+These can be modified as well, suit yourself.
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "s-d") 'daedreth/launch-discord)
+(global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
+(global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
+#+END_SRC
+
+** Audio controls
+This is a set of bindings to my XF86 keys that invokes pulsemixer with the correct parameters
+*** Functions to start processes
+It goes without saying that you are free to modify the modifier as you see fit, 4 is good enough for me though.
+#+BEGIN_SRC emacs-lisp
+  (defun audio/mute ()
+    (interactive)
+    (start-process "audio-mute" nil "pulsemixer" "--toggle-mute"))
+
+  (defun audio/raise-volume ()
+    (interactive)
+    (start-process "raise-volume" nil "pulsemixer" "--change-volume" "+4"))
+
+  (defun audio/lower-volume ()
+    (interactive)
+    (start-process "lower-volume" nil "pulsemixer" "--change-volume" "-4"))
+#+END_SRC
+
+*** Keybindings to start processes
+You can also change those if you'd like, but I highly recommend keeping 'em the same, chances are, they will just work.
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<XF86AudioMute>") 'audio/mute)
+(global-set-key (kbd "<XF86AudioRaiseVolume>") 'audio/raise-volume)
+(global-set-key (kbd "<XF86AudioLowerVolume>") 'audio/lower-volume)
+#+END_SRC
+
+* Projectile
+Projectile is an awesome project manager, mostly because it recognizes directories
+with a =.git= directory as projects and helps you manage them accordingly.
+** Enable projectile globally
+This makes sure that everything can be a project.
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init
+      (projectile-mode 1))
+#+END_SRC
+* Dashboard
+This is your new startup screen, together with projectile it works in unison and
+provides you with a quick look into your latest projects and files.
+Change the numbers to suit your liking, I find 5 to be enough.
+#+BEGIN_SRC emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-items '((recents  . 5)
+                            (projects . 5)))
+    (setq dashboard-banner-logo-title "Welcome to Uncle Daves Emacs!"))
+#+END_SRC
+* Modeline
+The modeline is the heart of emacs, it offers information at all times, it's persistent
+and verbose enough to gain a full understanding of modes and states you are in.
+
+Due to the fact that we attempt to use emacs as a desktop environment replacement,
+and external bar showing the time, the battery percentage and more system info would be great to have.
+I have however abandoned polybar in favor of a heavily modified modeline, this offers me more space
+on the screen and better integration.
+
+One modeline-related setting that is missing and is instead placed at the bottom is =diminish=.
+** Spaceline!
+I may not use spacemacs, since I do not like evil-mode and find spacemacs incredibly bloated and slow,
+however it would be stupid not to acknowledge the best parts about it, the theme and their modified powerline setup.
+
+This enables spaceline, it looks better and works very well with my theme of choice
+#+BEGIN_SRC emacs-lisp
+  (use-package spaceline
+    :ensure t
+    :config
+      (require 'spaceline-config)
+      (setq powerline-default-separator (quote arrow))
+      (spaceline-spacemacs-theme))
+#+END_SRC
+** Clock
+If you prefer the 12hr-format, change the variable to =nil= instead of =t=.
+*** Time format
+#+BEGIN_SRC emacs-lisp
+  (setq display-time-24hr-format t)
+#+END_SRC
+*** Enabling the mode
+This turns on the clock globally.
+#+BEGIN_SRC emacs-lisp
+  (display-time-mode 1)
+#+END_SRC
+** Battery indicator
+A package called =fancy-battery= will be used if we are in GUI emacs, otherwise the built in battery-mode will be used.
+Fancy battery has very odd colors if used in the tty, hence us disabling it.
+#+BEGIN_SRC emacs-lisp
+  (use-package fancy-battery
+    :ensure t
+    :config
+      (setq fancy-battery-show-percentage t)
+      (setq battery-update-interval 15)
+      (if window-system
+        (fancy-battery-mode)
+        (display-battery-mode)))
+#+END_SRC
+** System monitor
+A teeny-tiny system monitor that can be enabled or disabled at runtime, useful for checking performance
+with power-hungry processes in ansi-term
+
+symon can be toggled on and off with =Super + h=.
+#+BEGIN_SRC emacs-lisp
+  (use-package symon
+    :ensure t
+    :bind
+    ("s-h" . symon-mode))
+#+END_SRC
+* File manager
+Dired is nice and all, but I find myself, very often, doing very basic operations on very few files and need something less complex.
+This is where =treemacs= shines, it's not difficult to use, pops up like neotree does in vim and just works.
+** treemacs
+Did I mention it also support projectile projects? Yep, it's pretty rad.
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :defer t
+    :config
+    (progn
+      (setq treemacs-follow-after-init          t
+            treemacs-width                      35
+            treemacs-indentation                2
+            treemacs-collapse-dirs              (if (executable-find "python") 3 0)
+            treemacs-silent-refresh             nil
+            treemacs-change-root-without-asking nil
+            treemacs-sorting                    'alphabetic-desc
+            treemacs-show-hidden-files          t
+            treemacs-never-persist              nil
+            treemacs-is-never-other-window      nil
+            treemacs-goto-tag-strategy          'refetch-index)
+
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (pcase (cons (not (null (executable-find "git")))
+                   (not (null (executable-find "python3"))))
+        (`(t . t)
+         (treemacs-git-mode 'extended))
+        (`(t . _)
+         (treemacs-git-mode 'simple))))
+    :bind
+    (:map global-map
+          ([f8]         . treemacs-toggle)))
+
+  (use-package treemacs-projectile
+    :defer t
+    :ensure t
+    :config
+        (setq treemacs-header-function #'treemacs-projectile-create-header)
+    :bind (:map global-map
+                ([f9] . treemacs-projectile)))
+#+END_SRC
+* The terminal
+I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
+** Default shell should be bash
+I don't know why this is a thing, but asking me what shell to launch every single
+time I open a terminal makes me want to slap babies, this gets rid of it.
+#+BEGIN_SRC emacs-lisp
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+#+END_SRC
+** Easy to remember keybinding
+In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<s-return>") 'ansi-term)
+#+END_SRC
+* Moving around emacs
+One of the most important things about a text editor is how efficient you manage
+to be when using it, how much time do basic tasks take you etc.
+One of those tasks is moving around files and buffers, whatever you may use emacs for
+you /will/ be jumping around buffers like it's serious business, the following
+set of enhancements aims to make it easier.
+
+Do me the favor, do me the biggest favor, matter of fact do yourself the biggest favor and integrate those into your workflow, thank me later.
+
+** which-key and why I love emacs
+In order to use emacs, you don't need to know how to use emacs.
+It's self documenting, and coupled with this insanely useful package, it's even easier.
+In short, after you start inputting a command and stop, pondering what key must follow,
+it will automatically open a non-intrusive buffer at the bottom of the screen offering
+you suggestions for completing the command, that's it, nothing else.
+
+It's beautiful
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+      (which-key-mode))
+#+END_SRC
+** windows,panes and why I hate other-window
+Some of us have large displays, others have tiny netbook screens, but regardless of your hardware
+you probably use more than 2 panes/windows at times, cycling through all of them with
+=C-c o= is annoying to say the least, it's a lot of keystrokes and takes time, time you could spend doing something more productive.
+*** switch-window
+This magnificent package takes care of this issue.
+It's unnoticeable if you have <3 panes open, but with 3 or more, upon pressing =C-c o=
+you will notice how your buffers turn a solid color and each buffer is asigned a letter
+(the list below shows the letters, you can modify them to suit your liking), upon pressing
+a letter asigned to a window, your will be taken to said window, easy to remember, quick to use
+and most importantly, it annihilates a big issue I had with emacs.
+#+BEGIN_SRC emacs-lisp
+(use-package switch-window
+  :ensure t
+  :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts
+        '("a" "s" "d" "f" "j" "k" "l" "i" "o"))
+  :bind
+    ([remap other-window] . switch-window))
+#+END_SRC
+** buffers and why I hate list-buffers
+Another big thing is, buffers. If you use emacs, you use buffers, everyone loves them.
+Having many buffers is useful, but can be tedious to work with, let us see how we can improve it.
+*** Kill buffers without asking for confirmation
+Unless you have the muscle memory, I recommend omitting this bit, as you may lose progress for no reason when working.
+#+BEGIN_SRC emacs-lisp
+(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
+#+END_SRC
+
+*** Turn list-buffers into ibuffer
+I don't understand how ibuffer isn't the default option by now.
+
+It's vastly superior in terms of ergonomics and functionality, you can delete buffers, rename buffer, move buffers, organize buffers etc.
+#+BEGIN_SRC emacs-lisp
+(defalias 'list-buffers 'ibuffer)
+#+END_SRC
+**** expert-mode
+If you feel like you know how ibuffer works and need not to be asked for confirmation after every serious command, enable this as follows.
+#+BEGIN_SRC emacs-lisp
+(setq ibuffer-expert t)
+#+END_SRC
+*** close-all-buffers
+It's one of those things where I genuinely have to wonder why there is no built in functionality for it.
+Once in a blue moon I need to kill all buffers, and having ~150 of them open would mean I'd need to spend a few too many
+seconds doing this than I'd like, here's a solution.
+
+This can be invoked using =Control-F4=.
+#+BEGIN_SRC emacs-lisp
+  (defun close-all-buffers ()
+    (interactive)
+    (mapc 'kill-buffer (buffer-list)))
+  (global-set-key (kbd "<C-f4>") 'close-all-buffers)
+#+END_SRC
+** line numbers and programming
+Every now and then all of us feel the urge to be productive and write some code.
+In the event that this happens, the following bit of configuration makes sure that 
+we have access to relative line numbering in programming-related modes.
+#+BEGIN_SRC emacs-lisp
+  (use-package linum-relative
+    :ensure t
+    :config
+      (setq linum-relative-current-symbol "")
+      (add-hook 'prog-mode-hook 'linum-relative-mode))
+#+END_SRC
+** ido and why you should use it
+Once in a while you come across a package that is:
+
+- Unintrusive
+- Small
+- Preconfigured
+- Just werkz
+
+*** ido-mode
+I am glad to announce that ido is exactly this, it works well out of the box which is why I'm including it.
+Plus it makes sure that looking for files with =C-x C-f= is less of a pain due to auto-completion.
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-flex-matching nil)
+(setq ido-everywhere t)
+(ido-mode 1)
+#+END_SRC
+*** smex, also known as "ido for M-x"
+Exactly what it says on the tin, it's identical to ido, with the difference that
+it's used for launching functions instead of looking for files.
+#+BEGIN_SRC emacs-lisp
+(use-package smex
+  :ensure t
+  :init
+    (smex-initialize)
+  :bind
+    ("M-x" . smex)
+    ("M-X" . smex-major-mode-commands))
+#+END_SRC
+** avy and why it's the best thing in existence
+Many times have I pondered how I can move around buffers even quicker.
+I'm glad to say, that avy is precisely what I needed, and it's precisely what you need as well.
+In short, as you invoke one of avy's functions, you will be prompted for a character
+that you'd like to jump to in the /visible portion of the current buffer/.
+Afterwards you will notice how all instances of said character have additional letter on top of them.
+Pressing those letters, that are next to your desired character will move your cursor over there.
+Admittedly, this sounds overly complicated and complex, but in reality takes a split second
+and improves your life tremendously.
+
+I like M-s for it, same as C-s is for moving by searching string, now M-s can be moving by searching characters.
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind
+      ("M-s" . avy-goto-char))
+#+END_SRC
+* Minor conveniences
+Emacs is at it's best when it just does things for you, shows you the way so to speak.
+This can be best achieved using a number of small extensions. While on their own they might not be very
+impressive. Together they create a nice environment for you to work in.
+** Beacon
+While changing buffers or workspaces, the first thing you do is look for your cursor.
+Unless you know its position, you can not move it efficiently. Every time you change
+buffers, the current position of your cursor will be briefly highlighted now.
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :config
+      (beacon-mode 1))
+#+END_SRC
+** Rainbow
+Mostly useful if you are into web development or game development.
+Every time emacs encounters a hexadecimal code that resembles a color, it will automatically highlight
+it in the appropriate color. This is a lot cooler than you may think.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :init
+      (rainbow-mode 1))
+#+END_SRC
+** Hungry deletion
+On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
+Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
+You may not like it, thus disable it if you must, but it's pretty decent.
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :config
+      (global-hungry-delete-mode))
+#+END_SRC
+** Centering
+If only one pane is open, the content will be centered.
+Luckily, this does not shrink exwm buffers.
+#+BEGIN_SRC emacs-lisp
+  (use-package centered-window-mode
+    :ensure t
+    :config
+      (centered-window-mode t))
+#+END_SRC
+** Popup menu
+Instead of GUI x-popup-menu, I prefer a small minibuffer, it's easier to select options this way.
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-popup-menu
+    :ensure t
+    :init
+      (ace-popup-menu-mode 1))
+#+END_SRC
+* Completion
+Be it for code or prose, completion is a must.
+
+** company-mode
+After messing around with =auto-completion= for a while I decided to drop it
+in favor of =company=, and it turns out to have been a great decision.
+
+*** Global mode
+I like having it enabled globally myself, so thats what I do.
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :init
+      (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+*** Backends
+#+BEGIN_SRC emacs-lisp
+  (use-package company-jedi
+    :ensure t
+    :init
+      (add-to-list 'company-backends 'company-jedi))
+#+END_SRC
+** electric
+If you write any code, you may enjoy this.
+Typing the first character in a set of 2, completes the second one after your cursor.
+Opening a bracket? It's closed for you already. Quoting something? It's closed for you already.
+
+You can easily add and remove pairs yourself, have a look.
+#+BEGIN_SRC emacs-lisp
+(setq electric-pair-pairs '(
+                           (?\{ . ?\})
+                           (?\( . ?\))
+                           (?\[ . ?\])
+                           ))
+#+END_SRC
+
+And now to enable it
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode t)
+#+END_SRC
+* Git integration
+Countless are the times where I opened ansi-term to use =git= on something.
+These times are also something that I'd prefer stay in the past, since =magit= is
+great. It's easy and intuitive to use, shows its options at a keypress and much more.
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :config
+    (setq magit-push-always-verify nil)
+    :bind
+      ("M-g" . magit-status))
+#+END_SRC
+* Programming
+** Python
+I want emacs to act as close as possible to an IDE for Python, so I use Elpy.
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :init
+      (elpy-enable))
+#+END_SRC
+* Remote editing
+I have no need to directly edit files over SSH, but what I do need is a way to edit files as root.
+Opening up nano in a terminal as root to play around with grubs default settings is a no-no, this solves that.
+
+** Editing with sudo
+Pretty self-explanatory, useful as hell if you use exwm.
+#+BEGIN_SRC emacs-lisp
+  (use-package sudo-edit
+    :ensure t
+    :bind
+      ("s-e" . sudo-edit))
+#+END_SRC
+* Org
+One of the absolute greatest features of emacs is called "org-mode".
+This very file has been written in org-mode, a lot of other configurations are written in org-mode, etc etc.
+Luckily org-mode is one of the most complex things ever, lets make it a bit more usable with some basic configuration.
+
+Those are all rather self-explanatory.
+** Common settings
+#+BEGIN_SRC emacs-lisp
+  (setq org-ellipsis " ")
+  (setq org-src-fontify-natively t)
+  (setq org-src-window-setup 'current-window)
+#+END_SRC
+** Syntax highlighting for exported documents
+#+BEGIN_SRC emacs-lisp
+  (use-package htmlize
+    :ensure t)
+#+END_SRC
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c '") 'org-edit-src-code)
+  (define-key global-map "\C-cl" 'org-store-link)
+#+END_SRC
+** Org Bullets
+Makes it all look a bit nicer, I hate looking at asterisks.
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+** Exporting options
+One of the best things about org is the ability to export your file to many formats.
+Here is how we add more of them!
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-twbs
+    :ensure t)
+#+END_SRC
+* Diminishing modes
+Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
+you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
+them running, it just prevents them from showing up and taking up space.
+
+Edit this list as you see fit!
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'which-key-mode)
+    (diminish 'linum-relative-mode)
+    (diminish 'hungry-delete-mode)
+    (diminish 'beacon-mode)
+    (diminish 'centered-window-mode)
+    (diminish 'page-break-lines-mode)
+    (diminish 'auto-revert-mode)
+    (diminish 'rainbow-mode))
+#+END_SRC
+* Instant messaging
+I like IRC, I also like other protocols but I enjoy IRC most, it's obvious that I long
+for a way to do my messaging from within emacs.
+There is plenty of IRC clients in the repositories, and some more in the emacs repositories
+but I find that the default =erc= does the job best, it's easy to use and offers some conveniences
+that more sophisticated ones don't, so I use it.
+** erc, also known as "a way to ask for help on #emacs"
+You might want to edit the default nick, it's password protected anyway so don't bother.
+*** Some common settings
+This also hides some of the channel messages to avoid cluttering the buffer.
+The other line changes the prompt for each channel buffer to match the channel name,
+this way you always know who you are typing to.
+#+BEGIN_SRC emacs-lisp
+  (setq erc-nick "daedreth")
+  (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
+  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+#+END_SRC
+*** Nick highlighting
+You can even highlight nicks to make the buffers a bit more visually pleasing and easier to look at.
+#+BEGIN_SRC emacs-lisp
+(use-package erc-hl-nicks
+  :ensure t
+  :config
+    (erc-update-modules))
+#+END_SRC
+* Media
+Why bother with external media manager when emacs is a thing.
+EMMS is huge, incredibly powerful and luckily well documented.
+All I need it for is to play music and video, that's it.
+I also need it to display metadata on the modeline correctly, refer to the dependencies section above for details on
+what you need to install to make it work.
+
+** Some basic config to utilize mplayer
+There is many backends, many players and codecs for EMMS, but mplayer is simple and easy.
+At the bottom part of the configuration, you will notice how XF86 keys are used
+by default, so unless you keyboard is broken it should work out of the box.
+#+BEGIN_SRC emacs-lisp
+  (use-package emms
+    :ensure t
+    :config
+      (require 'emms-setup)
+      (require 'emms-player-simple)
+      (require 'emms-info-libtag)
+      (require 'emms-source-file)
+      (require 'emms-source-playlist)
+      (require 'emms-player-mplayer)
+      (emms-all)
+      (setq emms-source-file-default-directory "/data/Music/")
+      (setq emms-seek-seconds 5)
+      (setq emms-player-list '(emms-player-mplayer))
+      (setq emms-info-functions '(emms-info-libtag))
+    :bind
+      ("s-m s-p" . emms)
+      ("s-m s-b" . emms-browser)
+      ("<XF86AudioPrev>" . emms-previous)
+      ("<XF86AudioNext>" . emms-next)
+      ("<XF86AudioPlay>" . emms-pause)
+      ("<XF86AudioStop>" . emms-stop))
+#+END_SRC
