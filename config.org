@@ -502,6 +502,16 @@ I like M-s for it, same as C-s is for moving by searching string, now M-s can be
 Emacs is at it's best when it just does things for you, shows you the way so to speak.
 This can be best achieved using a number of small extensions. While on their own they might not be very
 impressive. Together they create a nice environment for you to work in.
+** Reloading the configuration
+Simply pressing =Control-c r= will reload this file, very handy.
+You can also manually invoke =config-reload=.
+#+BEGIN_SRC emacs-lisp
+  (defun config-reload ()
+    "Reloads ~/.emacs.d/config.org at runtime"
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
 Unless you know its position, you can not move it efficiently. Every time you change
