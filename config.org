@@ -543,7 +543,9 @@ You can also manually invoke =config-reload=.
 I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
 #+BEGIN_SRC emacs-lisp
   (use-package screenshot
-    :ensure t)
+    :ensure t
+    :config
+      (global-set-key (kbd "<print>") 'screenshot))
 #+END_SRC
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
