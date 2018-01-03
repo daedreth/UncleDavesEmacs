@@ -34,6 +34,7 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 - A browser (sadly, the built in xwidgets-webkit thingie is unreliable)
 - =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
 - A composite manager (highly recommended, I personally use =compton=)
+- =imagemagick= if you are going to be using emacs to take screenshots
 - =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice)
 - =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=
 **** Optional
@@ -542,13 +543,29 @@ You can also manually invoke =config-reload=.
 #+END_SRC
 ** Screenshots
 I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
+*** Screenshotting the entire screen
 #+BEGIN_SRC emacs-lisp
   (defun take-screenshot ()
     "Takes a fullscreen screenshot of the current workspace"
     (interactive)
+    (loop for i downfrom 3 to 1 do
+	  (progn
+	    (message (concat (number-to-string i) "..."))
+	    (sit-for 1)))
+    (message "Cheese!")
+    (sit-for 1)
     (start-process "screenshot" nil "import" "-window" "root" 
-		   (concat (number-to-string (float-time)) ".png")))
+		   (concat (number-to-string (float-time)) ".png"))
+    (message "Screenshot taken!"))
   (global-set-key (kbd "<print>") 'take-screenshot)
+#+END_SRC
+*** Screenshotting a region
+#+BEGIN_SRC emacs-lisp
+  (defun take-screenshot-region ()
+    "Takes a fullscreen screenshot of a user selected region."
+    (interactive)
+    (start-process "screenshot" nil "import" (concat (number-to-string (float-time)) ".png")))
+  (global-set-key (kbd "<Scroll_Lock>") 'take-screenshot-region)
 #+END_SRC
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
