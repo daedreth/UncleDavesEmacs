@@ -558,6 +558,15 @@ it in the appropriate color. This is a lot cooler than you may think.
     :init
       (rainbow-mode 1))
 #+END_SRC
+** Rainbow delimiters
+Colors parentheses and other delimiters depending on their depth, useful for any language using them,
+especially lisp.
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init
+      (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
 ** Hungry deletion
 On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
 Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
@@ -718,6 +727,7 @@ Edit this list as you see fit!
     (diminish 'centered-window-mode)
     (diminish 'page-break-lines-mode)
     (diminish 'auto-revert-mode)
+    (diminish 'rainbow-delimiters-mode)
     (diminish 'rainbow-mode))
 #+END_SRC
 * Instant messaging
