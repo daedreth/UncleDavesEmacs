@@ -646,15 +646,6 @@ great. It's easy and intuitive to use, shows its options at a keypress and much 
     :bind
       ("M-g" . magit-status))
 #+END_SRC
-* Programming
-** Python
-I want emacs to act as close as possible to an IDE for Python, so I use Elpy.
-#+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :init
-      (elpy-enable))
-#+END_SRC
 * Remote editing
 I have no need to directly edit files over SSH, but what I do need is a way to edit files as root.
 Opening up nano in a terminal as root to play around with grubs default settings is a no-no, this solves that.
