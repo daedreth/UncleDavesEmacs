@@ -149,16 +149,17 @@ TL;DR: It destroys the entire configuration, nothing works and all hell breaks l
 By default, these don't work, this makes sure they do, adding them to exwm-input-prefix-keys.
 #+BEGIN_SRC emacs-lisp
   (dolist (k '(XF86AudioLowerVolume
-               XF86AudioRaiseVolume
-               XF86PowerOff
-               XF86AudioMute
-               XF86AudioPlay
-               XF86AudioStop
-               XF86AudioPrev
-               XF86AudioNext
-               XF86ScreenSaver
-               XF68Back
-               XF86Forward))
+	       XF86AudioRaiseVolume
+	       XF86PowerOff
+	       XF86AudioMute
+	       XF86AudioPlay
+	       XF86AudioStop
+	       XF86AudioPrev
+	       XF86AudioNext
+	       XF86ScreenSaver
+	       XF68Back
+	       XF86Forward
+	       print))
     (cl-pushnew k exwm-input-prefix-keys))
 #+END_SRC
 
@@ -542,10 +543,12 @@ You can also manually invoke =config-reload=.
 ** Screenshots
 I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
 #+BEGIN_SRC emacs-lisp
-  (use-package screenshot
-    :ensure t
-    :config
-      (global-set-key (kbd "<print>") 'screenshot))
+  (defun take-screenshot ()
+    "Takes a fullscreen screenshot of the current workspace"
+    (interactive)
+    (start-process "screenshot" nil "import" "-window" "root" 
+		   (concat (number-to-string (float-time)) ".png")))
+  (global-set-key (kbd "<print>") 'take-screenshot)
 #+END_SRC
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
@@ -585,15 +588,6 @@ You may not like it, thus disable it if you must, but it's pretty decent.
     :ensure t
     :config
       (global-hungry-delete-mode))
-#+END_SRC
-** Centering
-If only one pane is open, the content will be centered.
-Luckily, this does not shrink exwm buffers.
-#+BEGIN_SRC emacs-lisp
-  (use-package centered-window-mode
-    :ensure t
-    :config
-      (centered-window-mode t))
 #+END_SRC
 ** Popup menu
 Instead of GUI x-popup-menu, I prefer a small minibuffer, it's easier to select options this way.
