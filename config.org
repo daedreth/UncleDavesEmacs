@@ -529,6 +529,7 @@ Emacs is at it's best when it just does things for you, shows you the way so to 
 This can be best achieved using a number of small extensions. While on their own they might not be very
 impressive. Together they create a nice environment for you to work in.
 ** Reloading the configuration
+   
 Simply pressing =Control-c r= will reload this file, very handy.
 You can also manually invoke =config-reload=.
 #+BEGIN_SRC emacs-lisp
@@ -537,6 +538,12 @@ You can also manually invoke =config-reload=.
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
   (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+** Screenshots
+I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
+#+BEGIN_SRC emacs-lisp
+  (use-package screenshot
+    :ensure t)
 #+END_SRC
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
