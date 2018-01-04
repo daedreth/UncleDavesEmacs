@@ -829,6 +829,8 @@ what you need to install to make it work.
 
 ** Some basic config to utilize mplayer
 There is many backends, many players and codecs for EMMS, but mplayer is simple and easy.
+The non XF86 keys are made to be somewhat logical to follow and easy to remember.
+=s-m s-a d= is easily decoded as =s-m= being the prefix for music =s-a= for "add" and =d= for directory.
 At the bottom part of the configuration, you will notice how XF86 keys are used
 by default, so unless you keyboard is broken it should work out of the box.
 #+BEGIN_SRC emacs-lisp
@@ -847,8 +849,10 @@ by default, so unless you keyboard is broken it should work out of the box.
       (setq emms-player-list '(emms-player-mplayer))
       (setq emms-info-functions '(emms-info-libtag))
     :bind
-      ("s-m s-p" . emms)
-      ("s-m s-b" . emms-browser)
+      ("s-m p" . emms)
+      ("s-m b" . emms-browser)
+      ("s-m s-a f" . emms-add-file)
+      ("s-m s-a d" .  emms-add-directory-tree)
       ("<XF86AudioPrev>" . emms-previous)
       ("<XF86AudioNext>" . emms-next)
       ("<XF86AudioPlay>" . emms-pause)
