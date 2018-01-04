@@ -31,32 +31,27 @@ For instructions on how to do it, refer to =~/.emacs.d/init.el=.
 Since we are going to use emacs as our window manager, it would be nice to have some external software to make our life easier.
 *** From the package manager:
 - =xorg-server=, for obvious reasons.
-- A browser (sadly, the built in xwidgets-webkit thingie is unreliable)
+- A browser (sadly, the built in xwidgets-webkit thingie is unreliable).
 - =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
-- A composite manager (highly recommended, I personally use =compton=)
-- =imagemagick= if you are going to be using emacs to take screenshots
-- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice)
-- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=
+- A composite manager (highly recommended, I personally use =compton=).
+- =imagemagick= if you are going to be using emacs to take screenshots.
+- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
+- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
 **** Optional
 - =noto-cjk=, for all the fonts imaginable.
 ** TRAMP
 *** From the package manager:
-- =sudo=, properly configured for your user
-** Python
-One liner to install all the dependencies for Elpy
-#+BEGIN_SRC shell
-pip install jedi flake8 autopep8
-#+END_SRC
+- =sudo=, properly configured for your user.
 ** EMMS
 *** From the package manager:
 - =mplayer= since we are going to be using EMMS for music and video playback, MPlayer is necessary and the recommended backend.
-- =mpv= if you prefer it over mplayer for video playback
+- =mpv= if you prefer it over mplayer for video playback.
 *** From emms:
-If you'd like for EMMS to correctly display file metadata, here's a few steps to do it
+If you'd like for EMMS to correctly display file metadata, here's a few steps to do it.
 
-- Install =taglib= via your distributions package manager
+- Install =taglib= via your distributions package manager.
 
-- Download and compile the necessary executable
+- Download and compile the necessary executable.
 #+BEGIN_SRC bash
 git clone git://git.sv.gnu.org/emms.git
 cd emms
@@ -373,6 +368,11 @@ set of enhancements aims to make it easier.
 
 Do me the favor, do me the biggest favor, matter of fact do yourself the biggest favor and integrate those into your workflow, thank me later.
 
+** scrolling and why does the screen move
+I don't know to be honest, but this little bit of code makes scrolling with emacs a lot nicer.
+#+BEGIN_SRC emacs-lisp
+  (setq scroll-conservatively 100)
+#+END_SRC
 ** which-key and why I love emacs
 In order to use emacs, you don't need to know how to use emacs.
 It's self documenting, and coupled with this insanely useful package, it's even easier.
@@ -411,9 +411,35 @@ and most importantly, it annihilates a big issue I had with emacs.
   :bind
     ([remap other-window] . switch-window))
 #+END_SRC
+*** Following window splits
+After you split a window, your focus remains in the previous one, this is annoying.
+#+BEGIN_SRC emacs-lisp
+  (defun split-and-follow-horizontally ()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+  (defun split-and-follow-vertically ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+#+END_SRC
 ** buffers and why I hate list-buffers
 Another big thing is, buffers. If you use emacs, you use buffers, everyone loves them.
 Having many buffers is useful, but can be tedious to work with, let us see how we can improve it.
+*** Always murder current buffer
+Doing =C-x k= should kill the current buffer at all times, we have =ibuffer= for more sophisticated thing.
+#+BEGIN_SRC emacs-lisp
+  (defun kill-current-buffer ()
+    "Kills the current buffer."
+    (interactive)
+    (kill-buffer (current-buffer)))
+  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+#+END_SRC
 *** Kill buffers without asking for confirmation
 Unless you have the muscle memory, I recommend omitting this bit, as you may lose progress for no reason when working.
 #+BEGIN_SRC emacs-lisp
@@ -467,9 +493,19 @@ Once in a while you come across a package that is:
 I am glad to announce that ido is exactly this, it works well out of the box which is why I'm including it.
 Plus it makes sure that looking for files with =C-x C-f= is less of a pain due to auto-completion.
 #+BEGIN_SRC emacs-lisp
-(setq ido-enable-flex-matching nil)
-(setq ido-everywhere t)
-(ido-mode 1)
+  (setq ido-enable-flex-matching nil)
+  (setq ido-create-new-buffer 'always)
+  (setq ido-everywhere t)
+  (ido-mode 1)
+#+END_SRC
+*** ido-vertical-mode
+I don't want to use the arrow keys, so I don't
+#+BEGIN_SRC emacs-lisp
+  (use-package ido-vertical-mode
+    :ensure t
+    :init
+      (ido-vertical-mode 1))
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+END_SRC
 *** smex, also known as "ido for M-x"
 Exactly what it says on the tin, it's identical to ido, with the difference that
@@ -530,6 +566,14 @@ Regardless of where your cursor is, this quickly copies a line.
 Emacs is at it's best when it just does things for you, shows you the way so to speak.
 This can be best achieved using a number of small extensions. While on their own they might not be very
 impressive. Together they create a nice environment for you to work in.
+** Visiting the configuration
+Quickly edit =~/.emacs.d/config.org=
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit ()
+    (interactive)
+    (find-file "~/.emacs.d/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit)
+#+END_SRC
 ** Reloading the configuration
    
 Simply pressing =Control-c r= will reload this file, very handy.
@@ -540,6 +584,11 @@ You can also manually invoke =config-reload=.
     (interactive)
     (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
   (global-set-key (kbd "C-c r") 'config-reload)
+#+END_SRC
+** Subwords
+Emacs treats camelCase strings as a single word by default, this changes said behaviour.
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
 #+END_SRC
 ** Screenshots
 I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
@@ -663,6 +712,7 @@ great. It's easy and intuitive to use, shows its options at a keypress and much 
     :ensure t
     :config
     (setq magit-push-always-verify nil)
+    (setq git-commit-summary-max-length 50)
     :bind
       ("M-g" . magit-status))
 #+END_SRC
@@ -688,6 +738,9 @@ Those are all rather self-explanatory.
 #+BEGIN_SRC emacs-lisp
   (setq org-ellipsis " ")
   (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-export-with-smart-quotes t)
   (setq org-src-window-setup 'current-window)
 #+END_SRC
 ** Syntax highlighting for exported documents
@@ -734,6 +787,7 @@ Edit this list as you see fit!
     (diminish 'which-key-mode)
     (diminish 'linum-relative-mode)
     (diminish 'hungry-delete-mode)
+    (diminish 'subword-mode)
     (diminish 'beacon-mode)
     (diminish 'centered-window-mode)
     (diminish 'page-break-lines-mode)
