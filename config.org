@@ -34,6 +34,7 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 - =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
 - A composite manager (highly recommended, I personally use =compton=).
 - =imagemagick= if you are going to be using emacs to take screenshots.
+- =slock= if you would like to lock the screen.
 - =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
 - =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
 **** Optional
@@ -178,6 +179,10 @@ to suit the software that you are using. What good is a launcher for discord if 
     (interactive)
     (exwm-async-run "qutebrowser"))
 
+  (defun daedreth/lock-screen ()
+    (interactive)
+    (exwm-async-run "slock"))
+
   (defun daedreth/shutdown ()
     (interactive)
     (start-process "halt" nil "sudo" "halt"))
@@ -186,9 +191,10 @@ to suit the software that you are using. What good is a launcher for discord if 
 *** Keybindings to start processes
 These can be modified as well, suit yourself.
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "s-d") 'daedreth/launch-discord)
-(global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
-(global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
+  (global-set-key (kbd "s-d") 'daedreth/launch-discord)
+  (global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
+  (global-set-key (kbd "<XF86ScreenSaver>") 'daedreth/lock-screen)
+  (global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
 #+END_SRC
 
 ** Audio controls
