@@ -799,11 +799,6 @@ Here is how we add more of them!
   (use-package ox-twbs
     :ensure t)
 #+END_SRC
-*** HTML5 Slide
-#+BEGIN_SRC emacs-lisp
-  (use-package ox-html5slide
-    :ensure t)
-#+END_SRC
 * Diminishing modes
 Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
 you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
