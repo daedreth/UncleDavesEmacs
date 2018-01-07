@@ -150,6 +150,14 @@ By default, these don't work, this makes sure they do, adding them to exwm-input
 Since I do not use a GUI launcher and do not have an external one like dmenu or rofi,
 I figured the best way to launch my most used applications would be direct emacsy
 keybindings.
+*** dmenu for emacs
+Who would've thought.
+#+BEGIN_SRC emacs-lisp
+  (use-package dmenu
+    :ensure t
+    :bind
+      ("s-SPC" . 'dmenu))
+#+END_SRC
 *** Functions to start processes
 I guess this goes without saying but you absolutely have to change the arguments
 to suit the software that you are using. What good is a launcher for discord if you don't use it at all.
@@ -862,6 +870,7 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
     :bind
       ("s-m p" . emms)
       ("s-m b" . emms-smart-browse)
+      ("s-m r" . emms-player-mpd-update-all-reset-cache)
       ("<XF86AudioPrev>" . emms-previous)
       ("<XF86AudioNext>" . emms-next)
       ("<XF86AudioPlay>" . emms-pause)

@@ -33,7 +33,7 @@
  '(nil nil t)
  '(package-selected-packages
    (quote
-    (ido-vertical-mode ido-vertical screenshot ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package)))
+    (dmenu ido-vertical-mode ido-vertical screenshot ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package)))
  '(screenshot-schemes (quote (("local" :dir "~/")))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
