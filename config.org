@@ -44,21 +44,8 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 - =sudo=, properly configured for your user.
 ** EMMS
 *** From the package manager:
-- =mplayer= since we are going to be using EMMS for music and video playback, MPlayer is necessary and the recommended backend.
-- =mpv= if you prefer it over mplayer for video playback.
-*** From emms:
-If you'd like for EMMS to correctly display file metadata, here's a few steps to do it.
-
-- Install =taglib= via your distributions package manager.
-
-- Download and compile the necessary executable.
-#+BEGIN_SRC bash
-git clone git://git.sv.gnu.org/emms.git
-cd emms
-make emms-print-metadata
-sudo cp src/emms-print-metadata /usr/bin/emms-print-metadata
-#+END_SRC
-If you so desire, you can copy the executable into anywhere within your =$PATH=, =/usr/bin= is just my prefered directory.
+- =mpd= since we are going to be using EMMS for music playback, I recommend setting up a working mpd server.
+- =mpv= for video playback.
 
 * Some notes
 ** On use-package some more
@@ -846,40 +833,58 @@ You can even highlight nicks to make the buffers a bit more visually pleasing an
     (erc-update-modules))
 #+END_SRC
 * Media
-Why bother with external media manager when emacs is a thing.
+Why bother with an external media manager when emacs is a thing.
 EMMS is huge, incredibly powerful and luckily well documented.
 All I need it for is to play music and video, that's it.
-I also need it to display metadata on the modeline correctly, refer to the dependencies section above for details on
-what you need to install to make it work.
+I also need it to display metadata on the modeline correctly, which it does with mpd automatically.
 
-** Some basic config to utilize mplayer
-There is many backends, many players and codecs for EMMS, but mplayer is simple and easy.
+** Some basic config to utilize mpd
+There is many backends, many players and codecs for EMMS, we use mpd now.
+*** Basic setup
 The non XF86 keys are made to be somewhat logical to follow and easy to remember.
-=s-m s-a d= is easily decoded as =s-m= being the prefix for music =s-a= for "add" and =d= for directory.
 At the bottom part of the configuration, you will notice how XF86 keys are used
 by default, so unless you keyboard is broken it should work out of the box.
+Obviously you might have to adjust /server-name/ and /server-port/ to fit your configuration.
 #+BEGIN_SRC emacs-lisp
   (use-package emms
     :ensure t
     :config
       (require 'emms-setup)
-      (require 'emms-player-simple)
-      (require 'emms-info-libtag)
       (require 'emms-source-file)
       (require 'emms-source-playlist)
-      (require 'emms-player-mplayer)
+      (require 'emms-player-mpd)
       (emms-all)
-      (setq emms-source-file-default-directory "/data/Music/")
       (setq emms-seek-seconds 5)
-      (setq emms-player-list '(emms-player-mplayer))
-      (setq emms-info-functions '(emms-info-libtag))
+      (setq emms-player-list '(emms-player-mpd))
+      (setq emms-info-functions '(emms-info-mpd))
+      (setq emms-player-mpd-server-name "localhost")
+      (setq emms-player-mpd-server-port "6601")
     :bind
       ("s-m p" . emms)
-      ("s-m b" . emms-browser)
-      ("s-m s-a f" . emms-add-file)
-      ("s-m s-a d" .  emms-add-directory-tree)
+      ("s-m b" . emms-smart-browse)
       ("<XF86AudioPrev>" . emms-previous)
       ("<XF86AudioNext>" . emms-next)
       ("<XF86AudioPlay>" . emms-pause)
       ("<XF86AudioStop>" . emms-stop))
+#+END_SRC
+*** Some more fun stuff
+**** Starting the daemon from within emacs
+If you have an absolutely massive music library, it might be a good idea to get rid of =emms-cache-set-from-mpd-all=
+and only invoke it manually when needed.
+#+BEGIN_SRC emacs-lisp
+  (defun start-music-daemon ()
+    "Start MPD, connects to it and syncs the metadata cache."
+    (interactive)
+    (shell-command "mpd")
+    (emms-player-mpd-connect)
+    (emms-cache-set-from-mpd-all))
+  (global-set-key (kbd "s-m c") 'start-music-daemon)
+#+END_SRC
+**** Killing the daemon from within emacs
+#+BEGIN_SRC emacs-lisp
+  (defun kill-music-daemon ()
+    (interactive)
+    (emms-stop)
+    (start-process "kill-mpd" nil "killall" "mpd"))
+  (global-set-key (kbd "s-m k") 'kill-music-daemon)
 #+END_SRC
