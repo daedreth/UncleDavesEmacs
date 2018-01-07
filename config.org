@@ -858,8 +858,6 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
     :ensure t
     :config
       (require 'emms-setup)
-      (require 'emms-source-file)
-      (require 'emms-source-playlist)
       (require 'emms-player-mpd)
       (emms-all)
       (setq emms-seek-seconds 5)

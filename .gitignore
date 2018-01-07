@@ -6,6 +6,7 @@
 *.pdf
 *.tex
 
+dmenu-items
 snippets
 config.el
 recentf
