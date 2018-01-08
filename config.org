@@ -457,17 +457,22 @@ Unless you have the muscle memory, I recommend omitting this bit, as you may los
 (setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
 #+END_SRC
 
-*** Turn list-buffers into ibuffer
+*** Turn switch-to-buffer into ibuffer
 I don't understand how ibuffer isn't the default option by now.
 
 It's vastly superior in terms of ergonomics and functionality, you can delete buffers, rename buffer, move buffers, organize buffers etc.
 #+BEGIN_SRC emacs-lisp
-(defalias 'list-buffers 'ibuffer)
+(global-set-key (kbd "C-x b") 'ibuffer)
 #+END_SRC
 **** expert-mode
 If you feel like you know how ibuffer works and need not to be asked for confirmation after every serious command, enable this as follows.
 #+BEGIN_SRC emacs-lisp
 (setq ibuffer-expert t)
+#+END_SRC
+*** Turn list-buffers into ido-switch-buffer
+Quick and easy to access.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
 #+END_SRC
 *** close-all-buffers
 It's one of those things where I genuinely have to wonder why there is no built in functionality for it.
@@ -477,6 +482,7 @@ seconds doing this than I'd like, here's a solution.
 This can be invoked using =Control-F4=.
 #+BEGIN_SRC emacs-lisp
   (defun close-all-buffers ()
+    "Kill all buffers without regard for their origin."
     (interactive)
     (mapc 'kill-buffer (buffer-list)))
   (global-set-key (kbd "<C-f4>") 'close-all-buffers)
