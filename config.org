@@ -759,6 +759,23 @@ Instead of GUI x-popup-menu, I prefer a small minibuffer, it's easier to select 
       (ace-popup-menu-mode 1))
 #+END_SRC
 
+* Kill ring
+There is a lot of customization to the kill ring, and while I have not used it much before,
+I decided that it was time to change that.
+** Maximum entries on the ring
+The default is 60, I personally need more sometimes.
+#+BEGIN_SRC emacs-lisp
+  (setq kill-ring-max 100)
+#+END_SRC
+** popup-kill-ring
+Out of all the packages I tried out, this one, being the simplest, appealed to me most.
+With a simple M-y you can now browse your kill-ring like browsing autocompletion items.
+C-n and C-p totally work for this.
+#+BEGIN_SRC emacs-lisp
+  (use-package popup-kill-ring
+    :ensure t
+    :bind ("M-y" . popup-kill-ring))
+#+END_SRC
 * Completion
 Be it for code or prose, completion is a must.
 
@@ -768,11 +785,25 @@ in favor of =company=, and it turns out to have been a great decision.
 
 *** Global mode
 I like having it enabled globally myself, so thats what I do.
+I set the delay for company mode to kick in to half a second, I also make sure that
+it starts doing its magic after typing in only 2 characters.
+
+I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
+    :config
+      (setq company-dabbrev-downcase 0)
+      (setq company-idle-delay 0.5)
+      (setq company-minimum-prefix-length 2)    
     :init
       (add-hook 'after-init-hook 'global-company-mode))
+
+  (with-eval-after-load 'company
+      (define-key company-active-map (kbd "M-n") nil)
+      (define-key company-active-map (kbd "M-p") nil)
+      (define-key company-active-map (kbd "C-n") #'company-select-next)
+      (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
 
 *** Backends
