@@ -759,6 +759,15 @@ Instead of GUI x-popup-menu, I prefer a small minibuffer, it's easier to select 
       (ace-popup-menu-mode 1))
 #+END_SRC
 
+* Zapping to char
+A nifty little package that kills all text between your cursor and a selected character.
+A lot more useful than you might think. If you wish to include the selected character in the killed region,
+change =zzz-up-to-char= into =zzz-to-char=.
+#+BEGIN_SRC emacs-lisp
+  (use-package zzz-to-char
+    :ensure t
+    :bind ("M-z" . zzz-up-to-char))
+#+END_SRC
 * Kill ring
 There is a lot of customization to the kill ring, and while I have not used it much before,
 I decided that it was time to change that.
