@@ -702,7 +702,8 @@ I don't need scrot to take screenshots, or shutter or whatever tools you might h
     "Takes a screenshot of a region selected by the user."
     (interactive)
     (call-process "import" nil nil nil ".newScreen.png")
-    (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1" (concat (subseq (number-to-string (float-time)) 0 10) ".png"))
+    (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
+                  (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
     (call-process "rm" nil nil nil ".newScreen.png"))
   (global-set-key (kbd "<Scroll_Lock>") 'take-screenshot-region)
 #+END_SRC
