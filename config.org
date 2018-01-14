@@ -1031,10 +1031,24 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
       ("<XF86AudioStop>" . emms-stop))
 #+END_SRC
 
+*** MPC Setup
+We use a non-default port, to use the built in =mpc= functionality we need to set up a variable.
+#+BEGIN_SRC emacs-lisp
+  (setq mpc-host "localhost:6601")
+#+END_SRC
+**** Updating the database easily.
+#+BEGIN_SRC emacs-lisp
+  (defun mpd/update-database ()
+    "Updates the MPD database synchronously."
+    (interactive)
+    (call-process "mpc" nil nil nil "update")
+    (message "MPD Database Updated!"))
+  (global-set-key (kbd "s-m u") 'mpd/update-database)
+#+END_SRC
 *** Some more fun stuff
 
 **** Starting the daemon from within emacs
-If you have an absolutely massive music library, it might be a good idea to get rid of =emms-cache-set-from-mpd-all=
+If you have an absolutely massive music library, it might be a good idea to get rid of =mpc-update=
 and only invoke it manually when needed.
 #+BEGIN_SRC emacs-lisp
   (defun start-music-daemon ()
