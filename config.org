@@ -691,7 +691,7 @@ I don't need scrot to take screenshots, or shutter or whatever tools you might h
     (message "Cheese!")
     (sit-for 1)
     (start-process "screenshot" nil "import" "-window" "root" 
-		   (concat (number-to-string (float-time)) ".png"))
+               (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
     (message "Screenshot taken!"))
   (global-set-key (kbd "<print>") 'take-screenshot)
 #+END_SRC
