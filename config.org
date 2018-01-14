@@ -1001,7 +1001,7 @@ EMMS is huge, incredibly powerful and luckily well documented.
 All I need it for is to play music and video, that's it.
 I also need it to display metadata on the modeline correctly, which it does with mpd automatically.
 
-** Some basic config to utilize mpd
+** EMMS with mpd
 There is many backends, many players and codecs for EMMS, we use mpd now.
 
 *** Basic setup
@@ -1032,9 +1032,37 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
 #+END_SRC
 
 *** MPC Setup
+**** Setting the default port
 We use a non-default port, to use the built in =mpc= functionality we need to set up a variable.
+Adjust according to your setup.
 #+BEGIN_SRC emacs-lisp
   (setq mpc-host "localhost:6601")
+#+END_SRC
+
+*** Some more fun stuff
+**** Starting the daemon from within emacs
+If you have an absolutely massive music library, it might be a good idea to get rid of =mpc-update=
+and only invoke it manually when needed.
+#+BEGIN_SRC emacs-lisp
+  (defun mpd/start-music-daemon ()
+    "Start MPD, connects to it and syncs the metadata cache."
+    (interactive)
+    (shell-command "mpd")
+    (emms-player-mpd-connect)
+    (emms-cache-set-from-mpd-all)
+    (message "MPD Started!"))
+  (global-set-key (kbd "s-m c") 'mpd/start-music-daemon)
+#+END_SRC
+
+**** Killing the daemon from within emacs
+#+BEGIN_SRC emacs-lisp
+  (defun mpd/kill-music-daemon ()
+    "Stops playback and kill the music daemon."
+    (interactive)
+    (emms-stop)
+    (call-process "killall" nil nil nil "mpd")
+    (message "MPD Killed!"))
+  (global-set-key (kbd "s-m k") 'mpd/kill-music-daemon)
 #+END_SRC
 **** Updating the database easily.
 #+BEGIN_SRC emacs-lisp
@@ -1044,27 +1072,4 @@ We use a non-default port, to use the built in =mpc= functionality we need to se
     (call-process "mpc" nil nil nil "update")
     (message "MPD Database Updated!"))
   (global-set-key (kbd "s-m u") 'mpd/update-database)
-#+END_SRC
-*** Some more fun stuff
-
-**** Starting the daemon from within emacs
-If you have an absolutely massive music library, it might be a good idea to get rid of =mpc-update=
-and only invoke it manually when needed.
-#+BEGIN_SRC emacs-lisp
-  (defun start-music-daemon ()
-    "Start MPD, connects to it and syncs the metadata cache."
-    (interactive)
-    (shell-command "mpd")
-    (emms-player-mpd-connect)
-    (emms-cache-set-from-mpd-all))
-  (global-set-key (kbd "s-m c") 'start-music-daemon)
-#+END_SRC
-
-**** Killing the daemon from within emacs
-#+BEGIN_SRC emacs-lisp
-  (defun kill-music-daemon ()
-    (interactive)
-    (emms-stop)
-    (start-process "kill-mpd" nil "killall" "mpd"))
-  (global-set-key (kbd "s-m k") 'kill-music-daemon)
 #+END_SRC
