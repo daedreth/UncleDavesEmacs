@@ -1,6 +1,8 @@
 #+STARTUP: overview
 #+TITLE: Uncle Dave's Emacs
 #+CREATOR: Dawid 'daedreth' Eckert
+#+LANGUAGE: en
+#+OPTIONS: num:nil
 * Installation
 ** Quick Installation
 =git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
@@ -16,32 +18,28 @@ The configuration, much like emacs is self documented, I highly recommend readin
 through my ramblings in their entirety.
 
 ** Less Quick Installation
-If you have a properly set up and working installation of =use-package=, you can
-easily pick out bits and pieces from this configuration, paste them into yours
-and expect them to work.
-
-Every category and subcategory are explained, more or less, besides I recommend
-the =try= package to experiment with packages without commitment.
-
-** Even Less Quick Installation
-If you do not have a working configuration, the first step necessary is bootstrapping
-=use-package=, potentially a theme and a font if you so desire.
-For instructions on how to do it, refer to =~/.emacs.d/init.el=.
+You are free to pick out bits and pieces of this and apply them.
+So long as you have a working =use-package= configuration (take a peek at my init.el),
+there should be absolutely no issues.
+I highly encourage you to read up on the prose around the packages you are interested in,
+I do my absolute best to describe the configuration as well as I only can, this might help you on your emacs journey!
+Have some fun with it, add your own keybindings, change parameters, it's your editor in the end.
 
 * Dependencies for:
 ** EXWM
 Since we are going to use emacs as our window manager, it would be nice to have some external software to make our life easier.
 *** From the package manager:
 - =xorg-server=, for obvious reasons. (there is no wayland support as of now)
-- A browser (sadly, the built in xwidgets-webkit thingie is unreliable).
 - =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
-- A composite manager (highly recommended, I personally use =compton=, the built in one does not work as intended.).
-- =imagemagick= if you are going to be using emacs to take screenshots.
-- =slock= if you would like to lock the screen.
-- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
-- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
+- =imagemagick=, if you are going to be using emacs to take screenshots.
+- =ibus-daemon=, if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
+- =terminus-font=, for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
+
 **** Optional
+- A browser (sadly, the built in xwidgets-webkit thingie is unreliable).
+- A composite manager (highly recommended, I personally use =compton=, the built in one does not work as intended.).
 - =noto-cjk=, for all the fonts imaginable.
+- =slock=, if you would like to lock the screen.
 
 ** TRAMP
 *** From the package manager:
@@ -49,8 +47,8 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 
 ** EMMS
 *** From the package manager:
-- =mpd= since we are going to be using EMMS for music playback, I recommend setting up a working mpd server.
-- =mpv= for video playback.
+- =mpd=, since we are going to be using EMMS for music playback, I recommend setting up a working mpd server.
+- =mpv=, for video playback.
 
 * Some notes
 ** On use-package some more
@@ -63,7 +61,7 @@ on launch and downloads it and installs if necessary.
 As you may have noticed, as you scroll down my bit of prose, this is the configuration file itself.
 This configuration is written in =org-mode=, which is a great emacs package and a great markup language.
 On launch, this file is being sourced into =~/.emacs.d/init.el=, the prose is being automatically
-stripped (as to not affect performance) and the remaining .el file is executed.
+stripped (as to not affect performance) and the remaining =config.el= file is parsed.
 
 This is also the reason why your org-mode configuration file is never called =init.org=.
 
@@ -71,35 +69,42 @@ This is also the reason why your org-mode configuration file is never called =in
 This entire config is meant to be used as a full on desktop environment, it is tailored to sit on top of xorg and be awesome.
 It is perfectly possible to use it without exwm and emms, as a regular emacs config, just make sure to delete the unwanted sections,
 ex.g EXWM, Audio Control, EMMS and all the launchers.
+There is barely any learning curve to using =exwm=, since it makes x-windows act as regular buffers as much as possible,
+so chances are, as long as you know your way around emacs itself, you will instinctively know how to make use of its features.
 
 ** On the keybindings
 I do my best to not pollute keymaps with my own keybindings. Most of the bindings I defined myself utilize the Super key (noted as =s-=).
 This is the least used modifier key together with Shift (noted as =S-=), thus using those, chances are all the bindings you already know
-and love are going to work flawlessly.
+and love are going to work flawlessly. For all the others, just keep on reading.
 
 * Basic Interface Settings
 These are setting that do not depend on packages and are built-in enhancements to the UI.
 
 ** Looks
 *** Remove lame startup screen
+We use an actual replacement for it, keep reading or head directly to =dashboard=.
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
 #+END_SRC
 *** Disable menus and scrollbars
+If you like using any of those, change =-1= to =1=.
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 #+END_SRC
 *** Disable bell
+This is annoying, remove this line if you like being visually reminded of events.
 #+BEGIN_SRC emacs-lisp
 (setq ring-bell-function 'ignore)
 #+END_SRC
-*** Highligh current line if using the GUI version of emacs.
+*** Highligh current line
+=hl-line= is awesome! It's not very awesome in the terminal version of emacs though, so we don't use that.
 #+BEGIN_SRC emacs-lisp
 (when window-system (global-hl-line-mode t))
 #+END_SRC
-*** Show pretty symbols (lambdas etc.) if using GUI.
+*** Pretty symbols
+Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
 #+BEGIN_SRC emacs-lisp
 (when window-system (global-prettify-symbols-mode t))
 #+END_SRC
@@ -127,6 +132,12 @@ Everything regarding the WM or DE-like functionality is bundled here, remove the
     :config
       (require 'exwm-config)
       (exwm-config-default))
+#+END_SRC
+
+*** Default workspace number
+I need one, and only one single workspace by default, since =exwm= is good enough to create those dynamically anyway, it doesn't matter much.
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-workspace-number 1)
 #+END_SRC
 
 *** Keybindings
@@ -159,6 +170,7 @@ By default, these don't work, this makes sure they do, adding them to exwm-input
 	       XF86ScreenSaver
 	       XF68Back
 	       XF86Forward
+               Scroll_Lock
 	       print))
     (cl-pushnew k exwm-input-prefix-keys))
 #+END_SRC
@@ -237,6 +249,42 @@ You can also change those if you'd like, but I highly recommend keeping 'em the 
 (global-set-key (kbd "<XF86AudioMute>") 'audio/mute)
 (global-set-key (kbd "<XF86AudioRaiseVolume>") 'audio/raise-volume)
 (global-set-key (kbd "<XF86AudioLowerVolume>") 'audio/lower-volume)
+#+END_SRC
+
+** Screenshots
+I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough.
+These won't work in the terminal version or the virtual console, obvious reasons.
+If you happen to use the console terminal version of emacs, get rid of =when window-system=.
+
+*** Screenshotting the entire screen
+#+BEGIN_SRC emacs-lisp
+  (defun daedreth/take-screenshot ()
+    "Takes a fullscreen screenshot of the current workspace"
+    (interactive)
+    (when window-system
+    (loop for i downfrom 3 to 1 do
+          (progn
+            (message (concat (number-to-string i) "..."))
+            (sit-for 1)))
+    (message "Cheese!")
+    (sit-for 1)
+    (start-process "screenshot" nil "import" "-window" "root" 
+               (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
+    (message "Screenshot taken!")))
+  (global-set-key (kbd "<print>") 'daedreth/take-screenshot)
+#+END_SRC
+
+*** Screenshotting a region
+#+BEGIN_SRC emacs-lisp
+  (defun daedreth/take-screenshot-region ()
+    "Takes a screenshot of a region selected by the user."
+    (interactive)
+    (when window-system
+    (call-process "import" nil nil nil ".newScreen.png")
+    (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
+                  (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
+    (call-process "rm" nil nil nil ".newScreen.png")))
+  (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
 #+END_SRC
 
 * Projectile
@@ -622,26 +670,46 @@ Why on earth does a function called =kill-word= not .. kill a word.
 It instead deletes characters from your cursors position to the end of the word,
 let's make a quick fix and bind it properly.
 #+BEGIN_SRC emacs-lisp
-  (defun kill-inner-word ()
+  (defun daedreth/kill-inner-word ()
     "Kills the entire word your cursor is in. Equivalent to 'ciw' in vim."
     (interactive)
+    (forward-char 1)
     (backward-word)
     (kill-word 1))
-  (global-set-key (kbd "C-c C-w") 'kill-inner-word)
+  (global-set-key (kbd "C-c w k") 'daedreth/kill-inner-word)
+#+END_SRC
+
+** Improved copy-word
+And again, the same as above but we make sure to not delete the source word.
+#+BEGIN_SRC emacs-lisp
+  (defun daedreth/copy-whole-word ()
+    (interactive)
+    (save-excursion
+      (forward-char 1)
+      (backward-word)
+      (kill-word 1)
+      (yank)))
+  (global-set-key (kbd "C-c w c") 'daedreth/copy-whole-word)
 #+END_SRC
 
 ** Copy a line
 Regardless of where your cursor is, this quickly copies a line.
 #+BEGIN_SRC emacs-lisp
-    (defun copy-whole-line ()
-      "Copies a line without regard for cursor position."
-      (interactive)
-      (save-excursion
-	(kill-new
-	 (buffer-substring
-	  (point-at-bol)
-	  (point-at-eol)))))
-    (global-set-key (kbd "C-c C-l") 'copy-whole-line)
+  (defun daedreth/copy-whole-line ()
+    "Copies a line without regard for cursor position."
+    (interactive)
+    (save-excursion
+      (kill-new
+       (buffer-substring
+        (point-at-bol)
+        (point-at-eol)))))
+  (global-set-key (kbd "C-c l c") 'daedreth/copy-whole-line)
+#+END_SRC
+
+** Kill a line
+And this quickly deletes a line.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c l k") 'kill-whole-line)
 #+END_SRC
 
 * Minor conveniences
@@ -674,38 +742,6 @@ You can also manually invoke =config-reload=.
 Emacs treats camelCase strings as a single word by default, this changes said behaviour.
 #+BEGIN_SRC emacs-lisp
   (global-subword-mode 1)
-#+END_SRC
-
-** Screenshots
-I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough
-
-*** Screenshotting the entire screen
-#+BEGIN_SRC emacs-lisp
-  (defun take-screenshot ()
-    "Takes a fullscreen screenshot of the current workspace"
-    (interactive)
-    (loop for i downfrom 3 to 1 do
-	  (progn
-	    (message (concat (number-to-string i) "..."))
-	    (sit-for 1)))
-    (message "Cheese!")
-    (sit-for 1)
-    (start-process "screenshot" nil "import" "-window" "root" 
-               (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
-    (message "Screenshot taken!"))
-  (global-set-key (kbd "<print>") 'take-screenshot)
-#+END_SRC
-
-*** Screenshotting a region
-#+BEGIN_SRC emacs-lisp
-  (defun take-screenshot-region ()
-    "Takes a screenshot of a region selected by the user."
-    (interactive)
-    (call-process "import" nil nil nil ".newScreen.png")
-    (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
-                  (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
-    (call-process "rm" nil nil nil ".newScreen.png"))
-  (global-set-key (kbd "<Scroll_Lock>") 'take-screenshot-region)
 #+END_SRC
 
 ** Beacon
@@ -769,6 +805,7 @@ change =zzz-up-to-char= into =zzz-to-char=.
     :ensure t
     :bind ("M-z" . zzz-up-to-char))
 #+END_SRC
+
 * Kill ring
 There is a lot of customization to the kill ring, and while I have not used it much before,
 I decided that it was time to change that.
@@ -786,6 +823,7 @@ C-n and C-p totally work for this.
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+
 * Completion
 Be it for code or prose, completion is a must.
 
@@ -914,7 +952,6 @@ Those are all rather self-explanatory.
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c '") 'org-edit-src-code)
-  (define-key global-map "\C-cl" 'org-store-link)
 #+END_SRC
 
 ** Org Bullets
@@ -1004,7 +1041,7 @@ I also need it to display metadata on the modeline correctly, which it does with
 ** EMMS with mpd
 There is many backends, many players and codecs for EMMS, we use mpd now.
 
-*** Basic setup
+*** Basic setup for mpd
 The non XF86 keys are made to be somewhat logical to follow and easy to remember.
 At the bottom part of the configuration, you will notice how XF86 keys are used
 by default, so unless you keyboard is broken it should work out of the box.
@@ -1033,7 +1070,7 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
 
 *** MPC Setup
 **** Setting the default port
-We use a non-default port, to use the built in =mpc= functionality we need to set up a variable.
+We use non-default settings for the socket, to use the built in =mpc= functionality we need to set up a variable.
 Adjust according to your setup.
 #+BEGIN_SRC emacs-lisp
   (setq mpc-host "localhost:6601")
@@ -1048,6 +1085,7 @@ and only invoke it manually when needed.
     "Start MPD, connects to it and syncs the metadata cache."
     (interactive)
     (shell-command "mpd")
+    (mpd/update-database)
     (emms-player-mpd-connect)
     (emms-cache-set-from-mpd-all)
     (message "MPD Started!"))
