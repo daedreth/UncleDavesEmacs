@@ -842,7 +842,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     :ensure t
     :config
       (setq company-dabbrev-downcase 0)
-      (setq company-idle-delay 0.5)
+      (setq company-idle-delay 0)
       (setq company-minimum-prefix-length 2)    
     :init
       (add-hook 'after-init-hook 'global-company-mode))
@@ -853,15 +853,6 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
       (define-key company-active-map (kbd "C-n") #'company-select-next)
       (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
-
-*** Backends
-#+BEGIN_SRC emacs-lisp
-  (use-package company-jedi
-    :ensure t
-    :init
-      (add-to-list 'company-backends 'company-jedi))
-#+END_SRC
-
 ** electric
 If you write any code, you may enjoy this.
 Typing the first character in a set of 2, completes the second one after your cursor.
@@ -884,9 +875,27 @@ And now to enable it
 * Programming
 Minor, non-completion related settings and plugins for writing code.
 
+** python
+#+BEGIN_SRC emacs-lisp
+  (use-package company-jedi
+    :ensure t
+    :init
+      (add-to-list 'company-backends 'company-jedi))
+#+END_SRC
 ** emacs-lisp
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
+
+  (use-package slime-company
+    :ensure t
+    :init
+    (slime-setup '(slime-fancy slime-company)))
 #+END_SRC
 
 * Git integration
