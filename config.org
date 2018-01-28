@@ -1038,6 +1038,12 @@ this way you always know who you are typing to.
   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 #+END_SRC
 
+*** Poor mans selectable server list
+What it says on the tin, this changes the =erc= history to include the server I connect to often.
+#+BEGIN_SRC emacs-lisp
+  (setq erc-server-history-list '("irc.freenode.net"
+                                  "localhost"))
+#+END_SRC
 *** Nick highlighting
 You can even highlight nicks to make the buffers a bit more visually pleasing and easier to look at.
 #+BEGIN_SRC emacs-lisp
