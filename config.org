@@ -287,6 +287,12 @@ If you happen to use the console terminal version of emacs, get rid of =when win
   (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
 #+END_SRC
 
+** Default browser
+I use qutebrowser, so that's what I'll set up.
+#+BEGIN_SRC emacs-lisp
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "qutebrowser")
+#+END_SRC
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
