@@ -148,14 +148,6 @@ TL;DR: It destroys the entire configuration, nothing works and all hell breaks l
   (global-set-key (kbd "s-k") 'exwm-workspace-delete)
   (global-set-key (kbd "s-w") 'exwm-workspace-swap)
 #+END_SRC
-
-*** System tray
-The systray resides in the bottom right corner at the end of the minibuffer, if it annoys you, remove this part.
-#+BEGIN_SRC emacs-lisp
-  (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
-#+END_SRC
-
 *** XF86 Button for non-emacs buffers
 By default, these don't work, this makes sure they do, adding them to exwm-input-prefix-keys.
 #+BEGIN_SRC emacs-lisp
