@@ -98,6 +98,14 @@ This is annoying, remove this line if you like being visually reminded of events
 #+BEGIN_SRC emacs-lisp
 (setq ring-bell-function 'ignore)
 #+END_SRC
+*** Set UTF-8 encoding
+#+BEGIN_SRC emacs-lisp 
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+#+END_SRC
 *** Highligh current line
 =hl-line= is awesome! It's not very awesome in the terminal version of emacs though, so we don't use that.
 #+BEGIN_SRC emacs-lisp
@@ -334,7 +342,10 @@ This enables spaceline, it looks better and works very well with my theme of cho
   (use-package spaceline
     :ensure t
     :config
-      (require 'spaceline-config)
+    (require 'spaceline-config)
+      (setq spaceline-buffer-encoding-abbrev-p nil)
+      (setq spaceline-line-column-p nil)
+      (setq spaceline-line-p nil)
       (setq powerline-default-separator (quote arrow))
       (spaceline-spacemacs-theme))
 #+END_SRC
@@ -353,6 +364,7 @@ If you prefer the 12hr-format, change the variable to =nil= instead of =t=.
 *** Time format
 #+BEGIN_SRC emacs-lisp
   (setq display-time-24hr-format t)
+  (setq display-time-format "%H:%M - %d %B %Y")
 #+END_SRC
 
 *** Enabling the mode
