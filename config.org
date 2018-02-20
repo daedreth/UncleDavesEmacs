@@ -477,6 +477,11 @@ As a great emacs user once said:
 Do me the favor, do me the biggest favor, matter of fact do yourself the biggest favor and integrate those into your workflow.
 #+END_QUOTE
 
+** a prerequisite for others packages
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t)
+#+END_SRC
 ** scrolling and why does the screen move
 I don't know to be honest, but this little bit of code makes scrolling with emacs a lot nicer.
 #+BEGIN_SRC emacs-lisp
@@ -544,7 +549,13 @@ This annoyed me so much I wrote these two, they take care of it.
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 #+END_SRC
-
+** swiper and why is the default search so lame
+I like me some searching, the default search is very meh. In emacs, you mostly use search to get around your buffer, much like with avy, but sometimes it doesn't hurt to search for entire words or mode, swiper makes sure this is more efficient.
+#+BEGIN_SRC emacs-lisp
+  (use-package swiper
+    :ensure t
+    :bind ("C-s" . 'swiper))
+#+END_SRC
 ** buffers and why I hate list-buffers
 Another big thing is, buffers. If you use emacs, you use buffers, everyone loves them.
 Having many buffers is useful, but can be tedious to work with, let us see how we can improve it.
@@ -853,7 +864,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     :config
       (setq company-dabbrev-downcase 0)
       (setq company-idle-delay 0)
-      (setq company-minimum-prefix-length 2)    
+      (setq company-minimum-prefix-length 3)
     :init
       (add-hook 'after-init-hook 'global-company-mode))
 
