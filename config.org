@@ -686,6 +686,13 @@ I like =M-s= for it, same as =C-s= is for moving by searching string, now =M-s= 
 * Text manipulation
 Here I shall collect self-made functions that make editing text easier.
 
+** Mark-Multiple
+I can barely contain my joy. This extension allows you to quickly mark the next occurence of a region and edit them all at once. Wow!
+#+BEGIN_SRC emacs-lisp
+  (use-package mark-multiple
+    :ensure t
+    :bind ("C-c q" . 'mark-next-like-this))
+#+END_SRC
 ** Improved kill-word
 Why on earth does a function called =kill-word= not .. kill a word.
 It instead deletes characters from your cursors position to the end of the word,
@@ -797,6 +804,13 @@ especially lisp.
       (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 #+END_SRC
 
+** Expand region
+A pretty simple package, takes your cursor and semantically expands the region, so words, sentences, maybe the contents of some parentheses, it's awesome, try it out.
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind ("C-q" . er/expand-region))
+#+END_SRC
 ** Hungry deletion
 On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
 Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
