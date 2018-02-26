@@ -273,8 +273,13 @@ These can be modified as well, suit yourself.
 ** Audio controls
 This is a set of bindings to my XF86 keys that invokes pulsemixer with the correct parameters
 
-*** Functions to start processes
+*** Volume modifier
 It goes without saying that you are free to modify the modifier as you see fit, 4 is good enough for me though.
+#+BEGIN_SRC emacs-lisp
+(defconst volumeModifier "4")
+#+END_SRC
+
+*** Functions to start processes
 #+BEGIN_SRC emacs-lisp
   (defun audio/mute ()
     (interactive)
@@ -282,11 +287,11 @@ It goes without saying that you are free to modify the modifier as you see fit, 
 
   (defun audio/raise-volume ()
     (interactive)
-    (start-process "raise-volume" nil "pulsemixer" "--change-volume" "+4"))
+    (start-process "raise-volume" nil "pulsemixer" "--change-volume" (concat "+" volumeModifier)))
 
   (defun audio/lower-volume ()
     (interactive)
-    (start-process "lower-volume" nil "pulsemixer" "--change-volume" "-4"))
+    (start-process "lower-volume" nil "pulsemixer" "--change-volume" (concat "-" volumeModifier)))
 #+END_SRC
 
 *** Keybindings to start processes
@@ -300,7 +305,6 @@ You can also change those if you'd like, but I highly recommend keeping 'em the 
 ** Screenshots
 I don't need scrot to take screenshots, or shutter or whatever tools you might have. This is enough.
 These won't work in the terminal version or the virtual console, obvious reasons.
-If you happen to use the console terminal version of emacs, get rid of =when window-system=.
 
 *** Screenshotting the entire screen
 #+BEGIN_SRC emacs-lisp
@@ -339,6 +343,7 @@ I use qutebrowser, so that's what I'll set up.
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "qutebrowser")
 #+END_SRC
+
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
@@ -446,49 +451,8 @@ symon can be toggled on and off with =Super + h=.
 #+END_SRC
 
 * File manager
-Dired is nice and all, but I find myself, very often, doing very basic operations on very few files and need something less complex.
-This is where =treemacs= shines, it's not difficult to use, pops up like neotree does in vim and just works.
-
-** treemacs
-Did I mention it also support projectile projects? Yep, it's pretty rad.
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :ensure t
-    :defer t
-    :config
-    (progn
-      (setq treemacs-follow-after-init t
-            treemacs-width 35
-            treemacs-indentation 2
-            treemacs-collapse-dirs (if (executable-find "python") 3 0)
-            treemacs-silent-refresh nil
-            treemacs-change-root-without-asking nil
-            treemacs-sorting 'alphabetic-desc
-            treemacs-show-hidden-files t
-            treemacs-never-persist nil
-            treemacs-is-never-other-window nil
-            treemacs-goto-tag-strategy 'refetch-index)
-
-      (treemacs-follow-mode t)
-      (treemacs-filewatch-mode t)
-      (pcase (cons (not (null (executable-find "git")))
-                   (not (null (executable-find "python3"))))
-        (`(t . t)
-         (treemacs-git-mode 'extended))
-        (`(t . _)
-         (treemacs-git-mode 'simple))))
-    :bind
-    (:map global-map
-          ([f8] . treemacs-toggle)))
-
-  (use-package treemacs-projectile
-    :defer t
-    :ensure t
-    :config
-        (setq treemacs-header-function #'treemacs-projectile-create-header)
-    :bind (:map global-map
-                ([f9] . treemacs-projectile)))
-#+END_SRC
+I abandoned treemacs, looking for an alternative as we speak.
+I'll probably just edit dired to suit my needs but who knows.
 
 * The terminal
 I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
@@ -922,7 +886,6 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
   (use-package company
     :ensure t
     :config
-      (setq company-dabbrev-downcase 0)
       (setq company-idle-delay 0)
       (setq company-minimum-prefix-length 3)
     :init
@@ -945,6 +908,7 @@ You can easily add and remove pairs yourself, have a look.
                            (?\{ . ?\})
                            (?\( . ?\))
                            (?\[ . ?\])
+                           (?\" . ?\")
                            ))
 #+END_SRC
 
@@ -1075,6 +1039,8 @@ Your modeline is sacred, and if you have a lot of modes enabled, as you will if 
 you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
 them running, it just prevents them from showing up and taking up space.
 
+*THIS WILL BE REMOVED SOON AS USE-PACKAGE HAS THE FUNCTIONALITY BUILT IN*
+
 Edit this list as you see fit!
 #+BEGIN_SRC emacs-lisp
   (use-package diminish
@@ -1148,7 +1114,7 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
     :config
       (require 'emms-setup)
       (require 'emms-player-mpd)
-      (emms-all)
+      (emms-all) ; don't change this to values you see on stackoverflow questions if you expect emms to work
       (setq emms-seek-seconds 5)
       (setq emms-player-list '(emms-player-mpd))
       (setq emms-info-functions '(emms-info-mpd))
