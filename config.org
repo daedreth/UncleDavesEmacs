@@ -133,46 +133,92 @@ I don't use either, you might want to turn those from =nil= to =t= if you do.
 Everything regarding the WM or DE-like functionality is bundled here, remove the entire section if you do not wish to use =exwm=.
 
 ** exwm
+The only time I actually had to use comments, this is for ease of removal if youu happen to not like exwm.
 *** Installation
 #+BEGIN_SRC emacs-lisp
   (use-package exwm
     :ensure t
     :config
+
+      ;; necessary to configure exwm manually
       (require 'exwm-config)
-      (exwm-config-default))
-#+END_SRC
 
-*** Default workspace number
-I need one, and only one single workspace by default, since =exwm= is good enough to create those dynamically anyway, it doesn't matter much.
-#+BEGIN_SRC emacs-lisp
-  (setq exwm-workspace-number 1)
-#+END_SRC
+      ;; fringe size, most people prefer 1 
+      (fringe-mode 3)
+      
+      ;; emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
+      (server-start)
 
-*** Keybindings
-If you are wondering why I am not utilizing use-package for the bindings,
-allow me to tell you about slight bugs that occur only when dealing with exwm bindings.
-TL;DR: It destroys the entire configuration, nothing works and all hell breaks loose.
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "s-k") 'exwm-workspace-delete)
-  (global-set-key (kbd "s-w") 'exwm-workspace-swap)
-#+END_SRC
-*** XF86 Button for non-emacs buffers
-By default, these don't work, this makes sure they do, adding them to exwm-input-prefix-keys.
-#+BEGIN_SRC emacs-lisp
-  (dolist (k '(XF86AudioLowerVolume
-	       XF86AudioRaiseVolume
-	       XF86PowerOff
-	       XF86AudioMute
-	       XF86AudioPlay
-	       XF86AudioStop
-	       XF86AudioPrev
-	       XF86AudioNext
-	       XF86ScreenSaver
-	       XF68Back
-	       XF86Forward
-               Scroll_Lock
-	       print))
-    (cl-pushnew k exwm-input-prefix-keys))
+      ;; this fixes issues with ido mode, if you use helm, get rid of it
+      (exwm-config-ido)
+
+      ;; a number between 1 and 9, exwm creates workspaces dynamically so I like starting out with 1
+      (setq exwm-workspace-number 1)
+
+      ;; this is a way to declare truly global/always working keybindings
+      ;; this is a nifty way to go back from char mode to line mode without using the mouse
+      (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+      (exwm-input-set-key (kbd "s-k") #'exwm-workspace-delete)
+      (exwm-input-set-key (kbd "s-w") #'exwm-workspace-swap)
+
+      ;; the next loop will bind s-<number> to switch to the corresponding workspace
+      (dotimes (i 10)
+        (exwm-input-set-key (kbd (format "s-%d" i))
+                            `(lambda ()
+                               (interactive)
+                               (exwm-workspace-switch-create ,i))))
+
+      ;; the simplest launcher, I keep it in only if dmenu eventually stopped working or something
+      (exwm-input-set-key (kbd "s-&")
+                          (lambda (command)
+                            (interactive (list (read-shell-command "$ ")))
+                            (start-process-shell-command command nil command)))
+
+      ;; an easy way to make keybindings work *only* in line mode
+      (push ?\C-q exwm-input-prefix-keys)
+      (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+
+      ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
+      (exwm-input-set-simulation-keys
+       '(
+         ;; movement
+         ([?\C-b] . left)
+         ([?\M-b] . C-left)
+         ([?\C-f] . right)
+         ([?\M-f] . C-right)
+         ([?\C-p] . up)
+         ([?\C-n] . down)
+         ([?\C-a] . home)
+         ([?\C-e] . end)
+         ([?\M-v] . prior)
+         ([?\C-v] . next)
+         ([?\C-d] . delete)
+         ([?\C-k] . (S-end delete))
+         ;; cut/paste
+         ([?\C-w] . ?\C-x)
+         ([?\M-w] . ?\C-c)
+         ([?\C-y] . ?\C-v)
+         ;; search
+         ([?\C-s] . ?\C-f)))
+
+      ;; this little bit will make sure that XF86 keys work in exwm buffers as well
+      (dolist (k '(XF86AudioLowerVolume
+                 XF86AudioRaiseVolume
+                 XF86PowerOff
+                 XF86AudioMute
+                 XF86AudioPlay
+                 XF86AudioStop
+                 XF86AudioPrev
+                 XF86AudioNext
+                 XF86ScreenSaver
+                 XF68Back
+                 XF86Forward
+                 Scroll_Lock
+                 print))
+      (cl-pushnew k exwm-input-prefix-keys))
+      
+      ;; this just enables exwm, it started automatically once everything is ready
+      (exwm-enable))
 #+END_SRC
 
 ** Launchers
