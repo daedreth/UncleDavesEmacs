@@ -920,6 +920,29 @@ And now to enable it
 * Programming
 Minor, non-completion related settings and plugins for writing code.
 
+** c/c++
+Requires libclang to be installed.
+#+BEGIN_SRC emacs-lisp
+  (use-package company-c-headers
+    :ensure t
+    :config
+      (require 'company)
+      (add-to-list 'company-backends 'company-c-headers))
+
+  (use-package company-irony
+    :ensure t
+    :config
+      (require 'company)
+      (add-to-list 'company-backends 'company-irony))
+
+  (use-package irony
+    :ensure t
+    :config
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+END_SRC
+
 ** python
 #+BEGIN_SRC emacs-lisp
   (use-package company-jedi
@@ -927,6 +950,17 @@ Minor, non-completion related settings and plugins for writing code.
     :config
       (require 'company)
       (add-to-list 'company-backends 'company-jedi))
+
+  (defun python-mode-company-init ()
+    (setq-local company-backends '((company-jedi
+                                    company-etags
+                                    company-dabbrev-code))))
+
+  (use-package company-jedi
+    :ensure t
+    :config
+      (require 'company)
+      (add-hook 'python-mode-hook 'python-mode-company-init))
 #+END_SRC
 
 ** emacs-lisp
@@ -965,10 +999,23 @@ Minor, non-completion related settings and plugins for writing code.
       (setq lua-indent-string-contents t)
       (setq lua-documentation-url "http://www.lua.org/manual/5.1/manual.html#pdf-") ; I have 5.1 installed, adjust the number if you must
       (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
-      (add-hook 'lua-mode-hook 'lua-mode-company-init)
-      (add-to-list 'company-backends 'company-lua))
+      (add-hook 'lua-mode-hook 'lua-mode-company-init))
 #+END_SRC
 
+** bash
+#+BEGIN_SRC emacs-lisp
+  (defun shell-mode-company-init ()
+    (setq-local company-backends '((company-shell
+                                    company-shell-env
+                                    company-etags
+                                    company-dabbrev-code))))
+
+  (use-package company-shell
+    :ensure t
+    :config
+      (require 'company)
+      (add-hook 'shell-mode-hook 'shell-mode-company-init))
+#+END_SRC
 * Git integration
 Countless are the times where I opened ansi-term to use =git= on something.
 These times are also something that I'd prefer stay in the past, since =magit= is
@@ -1078,6 +1125,7 @@ Edit this list as you see fit!
     (diminish 'visual-line-mode)
     (diminish 'subword-mode)
     (diminish 'beacon-mode)
+    (diminish 'irony-mode)
     (diminish 'centered-window-mode)
     (diminish 'page-break-lines-mode)
     (diminish 'auto-revert-mode)

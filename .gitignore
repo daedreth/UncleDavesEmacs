@@ -6,6 +6,8 @@
 *.pdf
 *.tex
 
+.python-environments
+irony
 dmenu-items
 snippets
 config.el

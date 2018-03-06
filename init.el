@@ -33,7 +33,7 @@
  '(nil nil t)
  '(package-selected-packages
    (quote
-    (company-lua mark-multiple expand-region simple-mpc swiper doom-themes popup-kill-ring dmenu ido-vertical-mode ido-vertical screenshot ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package)))
+    (company-c-headers company-shell company-irony irony irony-mode company-lua mark-multiple expand-region simple-mpc swiper doom-themes popup-kill-ring dmenu ido-vertical-mode ido-vertical screenshot ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package)))
  '(pos-tip-background-color "#36473A")
  '(pos-tip-foreground-color "#FFFFC8")
  '(screenshot-schemes (quote (("local" :dir "~/")))))
