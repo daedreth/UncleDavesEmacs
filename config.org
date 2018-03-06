@@ -924,9 +924,11 @@ Minor, non-completion related settings and plugins for writing code.
 #+BEGIN_SRC emacs-lisp
   (use-package company-jedi
     :ensure t
-    :init
+    :config
+      (require 'company)
       (add-to-list 'company-backends 'company-jedi))
 #+END_SRC
+
 ** emacs-lisp
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -940,7 +942,31 @@ Minor, non-completion related settings and plugins for writing code.
   (use-package slime-company
     :ensure t
     :init
-    (slime-setup '(slime-fancy slime-company)))
+      (require 'company)
+      (slime-setup '(slime-fancy slime-company)))
+#+END_SRC
+
+** lua
+#+BEGIN_SRC emacs-lisp
+  (defun custom-lua-repl-bindings ()
+    (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
+    (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer))
+
+  (defun lua-mode-company-init ()
+    (setq-local company-backends '((company-lua
+                                    company-etags
+                                    company-dabbrev-code))))
+
+  (use-package company-lua
+    :ensure t
+    :config
+      (require 'company)
+      (setq lua-indent-level 4)
+      (setq lua-indent-string-contents t)
+      (setq lua-documentation-url "http://www.lua.org/manual/5.1/manual.html#pdf-") ; I have 5.1 installed, adjust the number if you must
+      (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
+      (add-hook 'lua-mode-hook 'lua-mode-company-init)
+      (add-to-list 'company-backends 'company-lua))
 #+END_SRC
 
 * Git integration
