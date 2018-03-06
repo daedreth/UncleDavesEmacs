@@ -423,8 +423,8 @@ This enables spaceline, it looks better and works very well with my theme of cho
 Show the current line and column for your cursor.
 We are not going to have =relative-linum-mode= in every major mode, so this is useful.
 #+BEGIN_SRC emacs-lisp
-  (line-number-mode 1)
-  (column-number-mode 1)
+  (setq line-number-mode t)
+  (setq column-number-mode t)
 #+END_SRC
 
 ** Clock
@@ -870,15 +870,6 @@ You may not like it, thus disable it if you must, but it's pretty decent.
       (global-hungry-delete-mode))
 #+END_SRC
 
-** Popup menu
-Instead of GUI x-popup-menu, I prefer a small minibuffer, it's easier to select options this way.
-#+BEGIN_SRC emacs-lisp
-  (use-package ace-popup-menu
-    :ensure t
-    :init
-      (ace-popup-menu-mode 1))
-#+END_SRC
-
 * Zapping to char
 A nifty little package that kills all text between your cursor and a selected character.
 A lot more useful than you might think. If you wish to include the selected character in the killed region,
@@ -1216,7 +1207,6 @@ Edit this list as you see fit!
     (diminish 'subword-mode)
     (diminish 'beacon-mode)
     (diminish 'irony-mode)
-    (diminish 'centered-window-mode)
     (diminish 'page-break-lines-mode)
     (diminish 'auto-revert-mode)
     (diminish 'rainbow-delimiters-mode)
