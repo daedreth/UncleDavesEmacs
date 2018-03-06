@@ -782,6 +782,26 @@ Emacs treats camelCase strings as a single word by default, this changes said be
   (global-subword-mode 1)
 #+END_SRC
 
+** Electric
+If you write any code, you may enjoy this.
+Typing the first character in a set of 2, completes the second one after your cursor.
+Opening a bracket? It's closed for you already. Quoting something? It's closed for you already.
+
+You can easily add and remove pairs yourself, have a look.
+#+BEGIN_SRC emacs-lisp
+(setq electric-pair-pairs '(
+                           (?\{ . ?\})
+                           (?\( . ?\))
+                           (?\[ . ?\])
+                           (?\" . ?\")
+                           ))
+#+END_SRC
+
+And now to enable it
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode t)
+#+END_SRC
+
 ** Beacon
 While changing buffers or workspaces, the first thing you do is look for your cursor.
 Unless you know its position, you can not move it efficiently. Every time you change
@@ -868,15 +888,28 @@ C-n and C-p totally work for this.
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+* Programming
+Minor, non-completion related settings and plugins for writing code.
 
-* Completion
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :config
+      (use-package yasnippet-snippets
+        :ensure t)
+      (yas-global-mode 1))
+
+
+#+END_SRC
+** specific languages
 Be it for code or prose, completion is a must.
-
-** company-mode
 After messing around with =auto-completion= for a while I decided to drop it
 in favor of =company=, and it turns out to have been a great decision.
 
-*** Global mode
+Each category also has additional settings.
+
+*** global mode
 I like having it enabled globally myself, so thats what I do.
 I set the delay for company mode to kick in to half a second, I also make sure that
 it starts doing its magic after typing in only 2 characters.
@@ -897,30 +930,8 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
       (define-key company-active-map (kbd "C-n") #'company-select-next)
       (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
-** electric
-If you write any code, you may enjoy this.
-Typing the first character in a set of 2, completes the second one after your cursor.
-Opening a bracket? It's closed for you already. Quoting something? It's closed for you already.
 
-You can easily add and remove pairs yourself, have a look.
-#+BEGIN_SRC emacs-lisp
-(setq electric-pair-pairs '(
-                           (?\{ . ?\})
-                           (?\( . ?\))
-                           (?\[ . ?\])
-                           (?\" . ?\")
-                           ))
-#+END_SRC
-
-And now to enable it
-#+BEGIN_SRC emacs-lisp
-(electric-pair-mode t)
-#+END_SRC
-
-* Programming
-Minor, non-completion related settings and plugins for writing code.
-
-** c/c++
+*** c/c++
 Requires libclang to be installed.
 #+BEGIN_SRC emacs-lisp
   (use-package company-c-headers
@@ -943,7 +954,7 @@ Requires libclang to be installed.
       (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
-** python
+*** python
 #+BEGIN_SRC emacs-lisp
   (use-package company-jedi
     :ensure t
@@ -963,7 +974,7 @@ Requires libclang to be installed.
       (add-hook 'python-mode-hook 'python-mode-company-init))
 #+END_SRC
 
-** emacs-lisp
+*** emacs-lisp
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 
@@ -980,7 +991,7 @@ Requires libclang to be installed.
       (slime-setup '(slime-fancy slime-company)))
 #+END_SRC
 
-** lua
+*** lua
 #+BEGIN_SRC emacs-lisp
   (defun custom-lua-repl-bindings ()
     (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
@@ -1002,7 +1013,7 @@ Requires libclang to be installed.
       (add-hook 'lua-mode-hook 'lua-mode-company-init))
 #+END_SRC
 
-** bash
+*** bash
 #+BEGIN_SRC emacs-lisp
   (defun shell-mode-company-init ()
     (setq-local company-backends '((company-shell
