@@ -899,9 +899,14 @@ Minor, non-completion related settings and plugins for writing code.
       (use-package yasnippet-snippets
         :ensure t)
       (yas-global-mode 1))
-
-
 #+END_SRC
+
+** flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+#+END_SRC
+
 ** specific languages
 Be it for code or prose, completion is a must.
 After messing around with =auto-completion= for a while I decided to drop it
@@ -934,6 +939,13 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
 *** c/c++
 Requires libclang to be installed.
 #+BEGIN_SRC emacs-lisp
+  (use-package flycheck-clang-analyzer
+    :ensure t
+    :config
+    (with-eval-after-load 'flycheck
+      (require 'flycheck-clang-analyzer)
+       (flycheck-clang-analyzer-setup)))
+
   (use-package company-c-headers
     :ensure t
     :config
@@ -955,6 +967,11 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** python
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook 'flycheck-mode)
+#+END_SRC
+**** company
 #+BEGIN_SRC emacs-lisp
   (use-package company-jedi
     :ensure t
@@ -992,6 +1009,12 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** lua
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'flycheck-mode)
+#+END_SRC
+
+**** company
 #+BEGIN_SRC emacs-lisp
   (defun custom-lua-repl-bindings ()
     (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
@@ -1012,8 +1035,13 @@ Requires libclang to be installed.
       (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
       (add-hook 'lua-mode-hook 'lua-mode-company-init))
 #+END_SRC
-
 *** bash
+**** flycheck
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'flycheck-mode)
+
+#+END_SRC
+**** company
 #+BEGIN_SRC emacs-lisp
   (defun shell-mode-company-init ()
     (setq-local company-backends '((company-shell
