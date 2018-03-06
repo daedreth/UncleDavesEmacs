@@ -50,6 +50,16 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 - =mpd=, since we are going to be using EMMS for music playback, I recommend setting up a working mpd server.
 - =mpv=, for video playback.
 
+** Programming
+*** Package manager
+- =clang=, for c/c++ completion.
+- =sbcl=, for clisp completion and repl.
+- =virtualenv=, for python completion.
+- =lua=, for obvious reasons.
+
+*** pip
+- =pip install jedi flake8 autopep8=, here, a one line install.
+
 * Some notes
 ** On use-package some more
 We utilize use-package to handle downloading and configuring other packages painlessly.
@@ -114,7 +124,11 @@ This is annoying, remove this line if you like being visually reminded of events
 *** Pretty symbols
 Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
 #+BEGIN_SRC emacs-lisp
-(when window-system (global-prettify-symbols-mode t))
+  (when window-system
+        (use-package pretty-mode
+        :ensure t
+        :config
+        (global-pretty-mode t)))
 #+END_SRC
 
 ** Functionality
@@ -357,19 +371,23 @@ This makes sure that everything can be a project.
       (projectile-mode 1))
 #+END_SRC
 
+** Let projectile call make
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "<f5>") 'projectile-compile-project)
+#+END_SRC
 * Dashboard
 This is your new startup screen, together with projectile it works in unison and
 provides you with a quick look into your latest projects and files.
 Change the welcome message to whatever string you want and
 change the numbers to suit your liking, I find 5 to be enough.
 #+BEGIN_SRC emacs-lisp
-(use-package dashboard
-  :ensure t
-  :config
-    (dashboard-setup-startup-hook)
-    (setq dashboard-items '((recents  . 5)
-                            (projects . 5)))
-    (setq dashboard-banner-logo-title "Welcome to Uncle Daves Emacs!"))
+  (use-package dashboard
+    :ensure t
+    :config
+      (dashboard-setup-startup-hook)
+      (setq dashboard-items '((recents  . 5)
+                              (projects . 5)))
+      (setq dashboard-banner-logo-title "Welcome to Uncle Daves Emacs!"))
 #+END_SRC
 
 * Modeline
@@ -897,8 +915,7 @@ Minor, non-completion related settings and plugins for writing code.
     :ensure t
     :config
       (use-package yasnippet-snippets
-        :ensure t)
-      (yas-global-mode 1))
+        :ensure t))
 #+END_SRC
 
 ** flycheck
@@ -907,15 +924,7 @@ Minor, non-completion related settings and plugins for writing code.
     :ensure t)
 #+END_SRC
 
-** specific languages
-Be it for code or prose, completion is a must.
-After messing around with =auto-completion= for a while I decided to drop it
-in favor of =company=, and it turns out to have been a great decision.
-
-Each category also has additional settings.
-
-*** global mode
-I like having it enabled globally myself, so thats what I do.
+** company mode
 I set the delay for company mode to kick in to half a second, I also make sure that
 it starts doing its magic after typing in only 2 characters.
 
@@ -925,9 +934,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
     :ensure t
     :config
       (setq company-idle-delay 0)
-      (setq company-minimum-prefix-length 3)
-    :init
-      (add-hook 'after-init-hook 'global-company-mode))
+      (setq company-minimum-prefix-length 3))
 
   (with-eval-after-load 'company
       (define-key company-active-map (kbd "M-n") nil)
@@ -936,9 +943,20 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
       (define-key company-active-map (kbd "C-p") #'company-select-previous))
 #+END_SRC
 
+** specific languages
+Be it for code or prose, completion is a must.
+After messing around with =auto-completion= for a while I decided to drop it
+in favor of =company=, and it turns out to have been a great decision.
+
+Each category also has additional settings.
+
 *** c/c++
 Requires libclang to be installed.
 #+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+    (add-hook 'c++-mode-hook 'company-mode)
+    (add-hook 'c++-mode-hook 'company-mode))
+
   (use-package flycheck-clang-analyzer
     :ensure t
     :config
@@ -967,12 +985,20 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** python
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook 'yas-minor-mode)
+#+END_SRC
+
 **** flycheck
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook 'flycheck-mode)
 #+END_SRC
 **** company
 #+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+      (add-hook 'python-mode-hook 'company-mode))
+
   (use-package company-jedi
     :ensure t
     :config
@@ -992,8 +1018,19 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** emacs-lisp
+**** eldoc
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+#+END_SRC
+
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
+#+END_SRC
+
+**** company
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'company-mode)
 
   (use-package slime
     :ensure t
@@ -1009,6 +1046,11 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** lua
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'yas-minor-mode)
+#+END_SRC
+
 **** flycheck
 #+BEGIN_SRC emacs-lisp
   (add-hook 'lua-mode-hook 'flycheck-mode)
@@ -1016,6 +1058,8 @@ Requires libclang to be installed.
 
 **** company
 #+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'company-mode)
+
   (defun custom-lua-repl-bindings ()
     (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
     (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer))
@@ -1031,18 +1075,25 @@ Requires libclang to be installed.
       (require 'company)
       (setq lua-indent-level 4)
       (setq lua-indent-string-contents t)
-      (setq lua-documentation-url "http://www.lua.org/manual/5.1/manual.html#pdf-") ; I have 5.1 installed, adjust the number if you must
       (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
       (add-hook 'lua-mode-hook 'lua-mode-company-init))
 #+END_SRC
 *** bash
+**** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'yas-minor-mode)
+#+END_SRC
+
 **** flycheck
 #+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'flycheck-mode)
 
 #+END_SRC
+
 **** company
 #+BEGIN_SRC emacs-lisp
+  (add-hook 'shell-mode-hook 'company-mode)
+
   (defun shell-mode-company-init ()
     (setq-local company-backends '((company-shell
                                     company-shell-env
@@ -1059,6 +1110,7 @@ Requires libclang to be installed.
 Countless are the times where I opened ansi-term to use =git= on something.
 These times are also something that I'd prefer stay in the past, since =magit= is
 great. It's easy and intuitive to use, shows its options at a keypress and much more.
+** magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
@@ -1068,7 +1120,6 @@ great. It's easy and intuitive to use, shows its options at a keypress and much 
     :bind
       ("M-g" . magit-status))
 #+END_SRC
-
 * Remote editing
 I have no need to directly edit files over SSH, but what I do need is a way to edit files as root.
 Opening up nano in a terminal as root to play around with grubs default settings is a no-no, this solves that.
