@@ -9,7 +9,6 @@
 .python-environments
 irony
 dmenu-items
-snippets
 config.el
 recentf
 smex-items

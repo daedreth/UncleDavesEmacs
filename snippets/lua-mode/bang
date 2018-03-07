@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: hashbang
+# key: #!
+# --
+#!/usr/bin/env lua

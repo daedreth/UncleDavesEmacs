@@ -902,11 +902,12 @@ Minor, non-completion related settings and plugins for writing code.
 
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :config
-      (use-package yasnippet-snippets
-        :ensure t))
+    (use-package yasnippet
+      :ensure t
+      :config
+        (use-package yasnippet-snippets
+          :ensure t)
+        (yas-reload-all))
 #+END_SRC
 
 ** flycheck
