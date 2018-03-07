@@ -18,6 +18,10 @@
 ;;; This is the actual config file
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
 
+;;; Experimental email stuff
+(when (file-readable-p "~/.email/email.org")
+  (org-babel-load-file (expand-file-name "~/.email/email.org")))
+
 ;;; Anything below is personal preference
 ;;; You can change the font to suit your liking, it won't break anything.
 ;;; The one currently set up is called Terminus

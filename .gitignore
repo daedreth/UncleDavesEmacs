@@ -6,6 +6,7 @@
 *.pdf
 *.tex
 
+network-security.data
 .python-environments
 irony
 dmenu-items
