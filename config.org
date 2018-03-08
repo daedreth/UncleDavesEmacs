@@ -1259,6 +1259,7 @@ Those are all rather self-explanatory.
   (setq org-confirm-babel-evaluate nil)
   (setq org-export-with-smart-quotes t)
   (setq org-src-window-setup 'current-window)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
 
 ** Syntax highlighting for documents exported to HTML
