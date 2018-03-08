@@ -3,6 +3,10 @@
 #+CREATOR: Dawid 'daedreth' Eckert
 #+LANGUAGE: en
 #+OPTIONS: num:nil
+#+ATTR_HTML: :style margin-left: auto; margin-right: auto;
+#+CAPTION: Uncle Dave's Emacs running in KDE
+#+NAME:   screen.png
+[[./img/screen.png]]
 * Installation
 ** Quick Installation
 =git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
@@ -96,7 +100,9 @@ My new favourite one I guess, really decent default values.
     :ensure t
     :init
       (setq custom-enabled-themes (quote (zerodark)))
-      (setq custom-safe-themes (quote ("0e6e456b15dbeb6e7bcad4131f029e027cceecc3cf1598fc49141343860bfce6" default)))
+      (setq custom-safe-themes
+            (quote ("0e6e456b15dbeb6e7bcad4131f029e027cceecc3cf1598fc49141343860bfce6"
+                    default)))
       (load-theme 'zerodark))
 #+END_SRC
 
@@ -150,22 +156,37 @@ The theme is great, really, but some of the concepts just suck with powerline.
      `(fancy-battery-critical ((,class (:background ,background-blue :height 1.0))))
      
      ;; mode line stuff
-     `(mode-line ((,class (:background ,background-blue :height 1.0 :foreground ,blue :distant-foreground ,background-blue
+     `(mode-line ((,class (:background ,background-blue :height 1.0 :foreground ,blue
+                                       :distant-foreground ,background-blue
                                        :box ,(when zerodark-use-paddings-in-mode-line
                                                (list :line-width 6 :color background-blue))))))
      
-     `(mode-line-inactive ((,class (:background ,background-blue :height 1.0 :foreground ,default :distant-foreground ,background-blue
+     `(mode-line-inactive ((,class (:background ,background-blue :height 1.0 :foreground ,default
+                                                :distant-foreground ,background-blue
                                                 :box ,(when zerodark-use-paddings-in-mode-line
                                                         (list :line-width 6 :color background-blue))))))
 
      `(header-line ((,class (:inherit mode-line-inactive))))
 
-     `(powerline-active0 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
-     `(powerline-active1 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
-     `(powerline-active2 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
-     `(powerline-inactive0 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
-     `(powerline-inactive1 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
-     `(powerline-inactive2 ((,class (:height 1.0 :foreground ,blue :background ,background-blue :distant-foreground ,background-blue))))
+     `(powerline-active0 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                           :distant-foreground ,background-blue))))
+     `(powerline-active1 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                           :distant-foreground ,background-blue))))
+     `(powerline-active2 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                           :distant-foreground ,background-blue))))
+     `(powerline-inactive0 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                             :distant-foreground ,background-blue))))
+     `(powerline-inactive1 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                             distant-foreground ,background-blue))))
+     `(powerline-inactive2 ((,class (:height 1.0 :foreground ,blue :background ,background-blue
+                                             :distant-foreground ,background-blue))))
+
+     `(dashboard-heading-face ((,class (:background ,background :foreground ,blue
+                                                    :bold t :height 1.2))))
+     `(dashboard-banner-logo-title-face ((,class (:background ,background :foreground ,blue
+                                                              :bold t :height 1.2))))
+     `(widget-button ((,class (:background ,background :foreground ,default :bold nil
+                                           :underline t :height 0.9))))
      
      ;; erc stuff
      `(erc-nick-default-face ((,class :foreground ,blue :background ,background :weight bold)))
@@ -180,8 +201,10 @@ The theme is great, really, but some of the concepts just suck with powerline.
      `(outline-7 ((,class (:foreground ,peach :weight bold :height 1.2 :bold nil))))
      `(outline-8 ((,class (:foreground ,green-light :weight bold :height 1.1 :bold nil))))
      
-     `(org-block-begin-line ((,class (:background ,background-blue :foreground ,blue :bold t :height 1.0))))
-     `(org-block-end-line ((,class (:background ,background-blue :foreground ,blue :bold t :height 1.0))))))
+     `(org-block-begin-line ((,class (:background ,background-blue :foreground ,blue
+                                                  :bold t :height 1.0))))
+     `(org-block-end-line ((,class (:background ,background-blue :foreground ,blue
+                                                :bold t :height 1.0))))))
 #+END_SRC
 
 * Basic Interface Settings
@@ -483,9 +506,10 @@ change the numbers to suit your liking, I find 5 to be enough.
     :ensure t
     :config
       (dashboard-setup-startup-hook)
+      (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
       (setq dashboard-items '((recents  . 5)
                               (projects . 5)))
-      (setq dashboard-banner-logo-title "Welcome to Uncle Daves Emacs!"))
+      (setq dashboard-banner-logo-title ""))
 #+END_SRC
 
 * Modeline
