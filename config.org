@@ -238,8 +238,9 @@ This is annoying, remove this line if you like being visually reminded of events
 #+END_SRC
 *** Highligh current line
 =hl-line= is awesome! It's not very awesome in the terminal version of emacs though, so we don't use that.
+Besides, it's only used for programming.
 #+BEGIN_SRC emacs-lisp
-(when window-system (global-hl-line-mode t))
+  (when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
 #+END_SRC
 *** Pretty symbols
 Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
