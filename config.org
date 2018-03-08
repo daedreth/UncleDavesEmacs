@@ -1391,15 +1391,6 @@ You can even highlight nicks to make the buffers a bit more visually pleasing an
     (erc-update-modules))
 #+END_SRC
 
-** twitter
-#+BEGIN_SRC emacs-lisp
-  (use-package twittering-mode
-    :ensure t
-    :init
-      (setq twittering-use-master-password t)
-      (setq twittering-cert-file "/etc/ssl/certs/ca-certificates.crt")
-    :bind ("s-t" . twittering-mode))
-#+END_SRC
 
 * Media
 Why bother with an external media manager when emacs is a thing.
