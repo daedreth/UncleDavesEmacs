@@ -99,10 +99,6 @@ My new favourite one I guess, really decent default values.
   (use-package zerodark-theme
     :ensure t
     :init
-      (setq custom-enabled-themes (quote (zerodark)))
-      (setq custom-safe-themes
-            (quote ("0e6e456b15dbeb6e7bcad4131f029e027cceecc3cf1598fc49141343860bfce6"
-                    default)))
       (load-theme 'zerodark))
 #+END_SRC
 
