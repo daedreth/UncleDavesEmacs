@@ -15,6 +15,12 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+;;; this function loads all .el files in a directory, fresh off the emacs wiki
+(defun load-directory (dir)
+  (let ((load-it (lambda (f)
+		   (load-file (concat (file-name-as-directory dir) f)))))
+    (mapc load-it (directory-files dir nil "\\.el$"))))
+
 ;;; Anything below is personal preference
 ;;; You can change the font to suit your liking, it won't break anything.
 ;;; The one currently set up is called Terminus
@@ -49,3 +55,7 @@
 ;;; Experimental email stuff.
 (when (file-readable-p "~/.email/email.org")
   (org-babel-load-file (expand-file-name "~/.email/email.org")))
+
+;;; ssh and ftp connection stuff
+(when (file-directory-p "~/.ftp")
+  (load-directory "~/.ftp"))
