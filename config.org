@@ -967,7 +967,7 @@ it in the appropriate color. This is a lot cooler than you may think.
   (use-package rainbow-mode
     :ensure t
     :init
-      (rainbow-mode 1))
+      (add-hook 'prog-mode-hook 'rainbow-mode))
 #+END_SRC
 
 ** Rainbow delimiters
@@ -987,6 +987,7 @@ A pretty simple package, takes your cursor and semantically expands the region, 
     :ensure t
     :bind ("C-q" . er/expand-region))
 #+END_SRC
+
 ** Hungry deletion
 On the list of things I like doing, deleting big whitespaces is pretty close to the bottom.
 Backspace or Delete will get rid of all whitespace until the next non-whitespace character is encountered.
