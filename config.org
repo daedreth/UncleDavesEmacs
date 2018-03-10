@@ -147,7 +147,7 @@ The theme is great, really, but some of the concepts just suck with powerline.
     (custom-theme-set-faces
      'zerodark
 
-     `(fancy-battery-charging ((,class (:background ,background-blue :height 1.0))))
+     `(fancy-battery-charging ((,class (:background ,background-blue :height 1.0 :bold t))))
      `(fancy-battery-discharging ((,class (:background ,background-blue :height 1.0))))
      `(fancy-battery-critical ((,class (:background ,background-blue :height 1.0))))
      
