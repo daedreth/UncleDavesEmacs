@@ -8,10 +8,13 @@
 ;;; This is all kind of necessary
 (require 'package)
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-	     '("SC" . "http://joseito.republika.pl/sunrise-commander/") t)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
+
+(setq package-archives '(("ELPA"  . "http://tromey.com/elpa/")
+			 ("gnu"   . "http://elpa.gnu.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/")
+			 ("org"   . "https://orgmode.org/elpa/")
+			 ("SC"    . "http://joseito.republika.pl/sunrise-commander/")))
+
 (package-initialize)
 
 ;;; Bootstrapping use-package
