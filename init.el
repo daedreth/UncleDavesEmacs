@@ -1,5 +1,9 @@
 ;;; This fixed garbage collection, makes emacs start up faster
-(setq-default gc-cons-threshold 100000000)
+(setq gc-cons-threshold 402653184
+      gc-cons-percentage 0.6)
+
+(defvar startup/file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
 
 ;;; This is all kind of necessary
 (require 'package)
@@ -59,3 +63,13 @@
 ;;; ssh and ftp connection stuff
 (when (file-directory-p "~/.ftp")
   (load-directory "~/.ftp"))
+
+(defun startup/revert-file-name-handler-alist ()
+  (setq file-name-handler-alist startup/file-name-handler-alist))
+
+(defun startup/reset-gc ()
+  (setq gc-cons-threshold 16777216
+	gc-cons-percentage 0.1))
+
+(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
+(add-hook 'emacs-startup-hook 'startup/reset-gc)
