@@ -1080,30 +1080,37 @@ in favor of =company=, and it turns out to have been a great decision.
 Each category also has additional settings.
 
 *** c/c++
-Requires libclang to be installed.
+**** yasnippet
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'company
-    (add-hook 'c++-mode-hook 'company-mode)
-    (add-hook 'c++-mode-hook 'company-mode))
-
+  (add-hook 'c++-mode-hook 'yas-minor-mode)
+  (add-hook 'c-mode-hook 'yas-minor-mode)
+#+END_SRC
+**** flycheck
+#+BEGIN_SRC emacs-lisp
   (use-package flycheck-clang-analyzer
     :ensure t
     :config
     (with-eval-after-load 'flycheck
       (require 'flycheck-clang-analyzer)
        (flycheck-clang-analyzer-setup)))
+#+END_SRC
+**** company
+Requires libclang to be installed.
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'company
+    (add-hook 'c++-mode-hook 'company-mode)
+    (add-hook 'c-mode-hook 'company-mode))
 
   (use-package company-c-headers
-    :ensure t
-    :config
-      (require 'company)
-      (add-to-list 'company-backends 'company-c-headers))
+    :ensure t)
 
   (use-package company-irony
     :ensure t
     :config
-      (require 'company)
-      (add-to-list 'company-backends 'company-irony))
+      (setq-local company-backends '((company-etags
+                                      company-dabbrev-code
+                                      company-c-headers
+                                      company-irony))))
 
   (use-package irony
     :ensure t
