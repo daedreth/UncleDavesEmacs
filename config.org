@@ -1253,18 +1253,7 @@ great. It's easy and intuitive to use, shows its options at a keypress and much 
     :config
     (setq magit-push-always-verify nil)
     (setq git-commit-summary-max-length 50)
-    (setq magit-display-buffer-function
-        (lambda (buffer)
-          (display-buffer
-           buffer (if (and (derived-mode-p 'magit-mode)
-                           (memq (with-current-buffer buffer major-mode)
-                                 '(magit-process-mode
-                                   magit-revision-mode
-                                   magit-diff-mode
-                                   magit-stash-mode
-                                   magit-status-mode)))
-                      nil
-                    '(display-buffer-same-window)))))
+    (setq magit)
     :bind
       ("M-g" . magit-status))
 #+END_SRC
@@ -1406,8 +1395,6 @@ You can even highlight nicks to make the buffers a bit more visually pleasing an
   :config
     (erc-update-modules))
 #+END_SRC
-
-
 * Media
 Why bother with an external media manager when emacs is a thing.
 EMMS is huge, incredibly powerful and luckily well documented.
