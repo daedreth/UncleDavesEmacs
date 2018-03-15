@@ -4,8 +4,6 @@
 #+LANGUAGE: en
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
-#+CAPTION: Uncle Dave's Emacs running in KDE
-#+NAME:   screen.png
 [[./img/screen.png]]
 * Installation
 ** Quick Installation
@@ -99,7 +97,7 @@ My new favourite one I guess, really decent default values.
   (use-package zerodark-theme
     :ensure t
     :init
-      (load-theme 'zerodark))
+      (load-theme 'zerodark t))
 #+END_SRC
 
 ** Some customization
@@ -646,6 +644,7 @@ Do me the favor, do me the biggest favor, matter of fact do yourself the biggest
   (use-package ivy
     :ensure t)
 #+END_SRC
+
 ** scrolling and why does the screen move
 I don't know to be honest, but this little bit of code makes scrolling with emacs a lot nicer.
 #+BEGIN_SRC emacs-lisp
@@ -713,6 +712,7 @@ This annoyed me so much I wrote these two, they take care of it.
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 #+END_SRC
+
 ** swiper and why is the default search so lame
 I like me some searching, the default search is very meh. In emacs, you mostly use search to get around your buffer, much like with avy, but sometimes it doesn't hurt to search for entire words or mode, swiper makes sure this is more efficient.
 #+BEGIN_SRC emacs-lisp
@@ -720,6 +720,7 @@ I like me some searching, the default search is very meh. In emacs, you mostly u
     :ensure t
     :bind ("C-s" . 'swiper))
 #+END_SRC
+
 ** buffers and why I hate list-buffers
 Another big thing is, buffers. If you use emacs, you use buffers, everyone loves them.
 Having many buffers is useful, but can be tedious to work with, let us see how we can improve it.
@@ -857,6 +858,7 @@ I can barely contain my joy. This extension allows you to quickly mark the next 
     :ensure t
     :bind ("C-c q" . 'mark-next-like-this))
 #+END_SRC
+
 ** Improved kill-word
 Why on earth does a function called =kill-word= not .. kill a word.
 It instead deletes characters from your cursors position to the end of the word,
@@ -1025,6 +1027,7 @@ The default is 60, I personally need more sometimes.
 #+BEGIN_SRC emacs-lisp
   (setq kill-ring-max 100)
 #+END_SRC
+
 ** popup-kill-ring
 Out of all the packages I tried out, this one, being the simplest, appealed to me most.
 With a simple M-y you can now browse your kill-ring like browsing autocompletion items.
@@ -1034,6 +1037,7 @@ C-n and C-p totally work for this.
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+
 * Programming
 Minor, non-completion related settings and plugins for writing code.
 
@@ -1214,6 +1218,7 @@ Requires libclang to be installed.
       (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
       (add-hook 'lua-mode-hook 'lua-mode-company-init))
 #+END_SRC
+
 *** bash
 **** yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -1242,6 +1247,7 @@ Requires libclang to be installed.
       (require 'company)
       (add-hook 'shell-mode-hook 'shell-mode-company-init))
 #+END_SRC
+
 * Git integration
 Countless are the times where I opened ansi-term to use =git= on something.
 These times are also something that I'd prefer stay in the past, since =magit= is
@@ -1387,6 +1393,7 @@ What it says on the tin, this changes the =erc= history to include the server I 
   (setq erc-server-history-list '("irc.freenode.net"
                                   "localhost"))
 #+END_SRC
+
 *** Nick highlighting
 You can even highlight nicks to make the buffers a bit more visually pleasing and easier to look at.
 #+BEGIN_SRC emacs-lisp
@@ -1395,6 +1402,7 @@ You can even highlight nicks to make the buffers a bit more visually pleasing an
   :config
     (erc-update-modules))
 #+END_SRC
+
 * Media
 Why bother with an external media manager when emacs is a thing.
 EMMS is huge, incredibly powerful and luckily well documented.
