@@ -1089,6 +1089,7 @@ Each category also has additional settings.
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
 #+END_SRC
+
 **** flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck-clang-analyzer
@@ -1098,6 +1099,7 @@ Each category also has additional settings.
       (require 'flycheck-clang-analyzer)
        (flycheck-clang-analyzer-setup)))
 #+END_SRC
+
 **** company
 Requires libclang to be installed.
 #+BEGIN_SRC emacs-lisp
@@ -1401,6 +1403,13 @@ You can even highlight nicks to make the buffers a bit more visually pleasing an
   :ensure t
   :config
     (erc-update-modules))
+#+END_SRC
+
+** rich presence for discord
+Memes, but it's fun and tiny.
+#+BEGIN_SRC emacs-lisp
+  (use-package elcord
+    :ensure t)
 #+END_SRC
 
 * Media
