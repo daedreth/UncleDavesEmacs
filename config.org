@@ -1113,17 +1113,16 @@ Requires libclang to be installed.
   (use-package company-irony
     :ensure t
     :config
-      (setq-local company-backends '((company-etags
-                                      company-dabbrev-code
-                                      company-c-headers
-                                      company-irony))))
+    (setq company-backends '((company-c-headers
+                              company-dabbrev-code
+                              company-irony))))
 
   (use-package irony
     :ensure t
     :config
-      (add-hook 'c++-mode-hook 'irony-mode)
-      (add-hook 'c-mode-hook 'irony-mode)
-      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 
 *** python
