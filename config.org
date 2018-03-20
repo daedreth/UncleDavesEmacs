@@ -1066,14 +1066,15 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
   (use-package company
     :ensure t
     :config
-      (setq company-idle-delay 0)
-      (setq company-minimum-prefix-length 3))
+    (setq company-idle-delay 0)
+    (setq company-minimum-prefix-length 3))
 
   (with-eval-after-load 'company
-      (define-key company-active-map (kbd "M-n") nil)
-      (define-key company-active-map (kbd "M-p") nil)
-      (define-key company-active-map (kbd "C-n") #'company-select-next)
-      (define-key company-active-map (kbd "C-p") #'company-select-previous))
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "SPC") #'company-abort))
 #+END_SRC
 
 ** specific languages
