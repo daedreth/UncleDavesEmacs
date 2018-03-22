@@ -753,13 +753,6 @@ If you feel like you know how ibuffer works and need not to be asked for confirm
 #+BEGIN_SRC emacs-lisp
 (setq ibuffer-expert t)
 #+END_SRC
-
-*** Turn list-buffers into ido-switch-buffer
-Quick and easy to access, besides, it's =ido= so what's not to love.
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-#+END_SRC
-
 *** close-all-buffers
 It's one of those things where I genuinely have to wonder why there is no built in functionality for it.
 Once in a blue moon I need to kill all buffers, and having ~150 of them open would mean I'd need to spend a few too many
@@ -788,46 +781,46 @@ something like =ansi-term= for instance.
       (add-hook 'prog-mode-hook 'linum-relative-mode))
 #+END_SRC
 
-** ido and why you should use it
-Once in a while you come across a package that is:
-
-- Unintrusive
-- Small
-- Preconfigured
-- Just werkz
-*** ido-mode
-I am glad to announce that ido is exactly this, it works well out of the box which is why I'm including it.
-Plus it makes sure that looking for files with =C-x C-f= is less of a pain due to auto-completion.
-+It's also superior to helm but shh, someone might hear us.+
+** ido and why I started using helm
+Sometimes, you don't realize how good something is until you try it extensively.
+I give in, helm is awesome. I'll end up customizing it more eventually,
+it's rather similar to ido-vertical though.
+*** helm
 #+BEGIN_SRC emacs-lisp
-  (setq ido-enable-flex-matching nil)
-  (setq ido-create-new-buffer 'always)
-  (setq ido-everywhere t)
-  (ido-mode 1)
-#+END_SRC
-
-*** ido-vertical-mode
-One of the best packages on melpa, I don't want to use the arrow keys, so I don't and now
-I can even use =C-n= and =C-p= to select items.
-#+BEGIN_SRC emacs-lisp
-  (use-package ido-vertical-mode
+  (use-package helm
     :ensure t
+    :bind
+    ("C-x C-f" . 'helm-find-files)
+    ("C-x C-b" . 'helm-buffers-list)
+    ("M-x" . 'helm-M-x)
+    :config
+    (defun daedreth/helm-hide-minibuffer ()
+      (when (with-helm-buffer helm-echo-input-in-header-line)
+        (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+          (overlay-put ov 'window (selected-window))
+          (overlay-put ov 'face
+                       (let ((bg-color (face-background 'default nil)))
+                         `(:background ,bg-color :foreground ,bg-color)))
+          (setq-local cursor-type nil))))
+    (add-hook 'helm-minibuffer-set-up-hook 'daedreth/helm-hide-minibuffer)
+    (setq helm-autoresize-max-height 0
+          helm-autoresize-min-height 40
+          helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match t
+          helm-semantic-fuzzy-match t
+          helm-imenu-fuzzy-match t
+          helm-split-window-in-side-p nil
+          helm-move-to-line-cycle-in-source nil
+          helm-ff-search-library-in-sexp t
+          helm-scroll-amount 8 
+          helm-echo-input-in-header-line t)
     :init
-      (ido-vertical-mode 1))
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-#+END_SRC
+    (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+    (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
+    (helm-autoresize-mode 1)
+    (helm-mode 1))
 
-*** smex, also known as "ido for M-x"
-Exactly what it says on the tin, it's identical to ido, with the difference that
-it's used for launching functions instead of looking for files.
-#+BEGIN_SRC emacs-lisp
-(use-package smex
-  :ensure t
-  :init
-    (smex-initialize)
-  :bind
-    ("M-x" . smex)
-    ("M-X" . smex-major-mode-commands))
 #+END_SRC
 
 ** avy and why it's the best thing in existence
@@ -1009,7 +1002,7 @@ You may not like it, thus disable it if you must, but it's pretty decent.
       (global-hungry-delete-mode))
 #+END_SRC
 
-* Zapping to char
+** Zapping to char
 A nifty little package that kills all text between your cursor and a selected character.
 A lot more useful than you might think. If you wish to include the selected character in the killed region,
 change =zzz-up-to-char= into =zzz-to-char=.
