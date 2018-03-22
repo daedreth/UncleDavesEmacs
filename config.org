@@ -253,9 +253,18 @@ I don't use either, you might want to turn those from =nil= to =t= if you do.
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 #+END_SRC
+
 *** Change yes-or-no questions into y-or-n questions
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+*** Async
+Lets us use asynchronous processes wherever possible, pretty useful.
+#+BEGIN_SRC emacs-lisp
+  (use-package async
+    :ensure t
+    :init (dired-async-mode 1))
 #+END_SRC
 
 * Window Manager
@@ -816,11 +825,12 @@ it's rather similar to ido-vertical though.
           helm-scroll-amount 8 
           helm-echo-input-in-header-line t)
     :init
-    (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
-    (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
-    (helm-autoresize-mode 1)
     (helm-mode 1))
 
+  (require 'helm-config)    
+  (helm-autoresize-mode 1)
+  (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+  (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
 #+END_SRC
 
 ** avy and why it's the best thing in existence
