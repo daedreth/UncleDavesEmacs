@@ -983,6 +983,11 @@ it in the appropriate color. This is a lot cooler than you may think.
       (add-hook 'prog-mode-hook 'rainbow-mode))
 #+END_SRC
 
+** Show parens
+I forgot about that initially, it highlights matching parens when the cursor is just behind one of them.
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+#+END_SRC
 ** Rainbow delimiters
 Colors parentheses and other delimiters depending on their depth, useful for any language using them,
 especially lisp.
@@ -1280,7 +1285,6 @@ Pretty self-explanatory, useful as hell if you use exwm.
     :bind
       ("s-e" . sudo-edit))
 #+END_SRC
-
 * Org
 One of the absolute greatest features of emacs is called "org-mode".
 This very file has been written in org-mode, a lot of other configurations are written in org-mode, same goes for
@@ -1340,6 +1344,12 @@ Hitting tab after an "<el" in an org-mode file will create a template for elisp 
 One of the best things about org is the ability to export your file to many formats.
 Here is how we add more of them!
 
+*** latex
+#+BEGIN_SRC emacs-lisp
+  (when (file-directory-p "/usr/share/emacs/site-lisp/tex-utils")
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/tex-utils")
+    (require 'xdvi-search))
+#+END_SRC
 *** Twitter Bootstrap
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs
