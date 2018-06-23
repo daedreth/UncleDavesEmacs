@@ -271,7 +271,7 @@ Lets us use asynchronous processes wherever possible, pretty useful.
 Everything regarding the WM or DE-like functionality is bundled here, remove the entire section if you do not wish to use =exwm=.
 
 ** exwm
-The only time I actually had to use comments, this is for ease of removal if youu happen to not like exwm.
+The only time I actually had to use comments, this is for ease of removal if you happen to not like exwm.
 *** Installation
 #+BEGIN_SRC emacs-lisp
   (use-package exwm
