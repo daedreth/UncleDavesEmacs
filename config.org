@@ -737,11 +737,7 @@ Having many buffers is useful, but can be tedious to work with, let us see how w
 *** Always murder current buffer
 Doing =C-x k= should kill the current buffer at all times, we have =ibuffer= for more sophisticated thing.
 #+BEGIN_SRC emacs-lisp
-  (defun kill-current-buffer ()
-    "Kills the current buffer."
-    (interactive)
-    (kill-buffer (current-buffer)))
-  (global-set-key (kbd "C-x k") 'kill-current-buffer)
+  (global-set-key (kbd "C-x k") 'kill-this-buffer)
 #+END_SRC
 
 *** Kill buffers without asking for confirmation
