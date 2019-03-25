@@ -600,20 +600,8 @@ symon can be toggled on and off with =Super + h=.
 #+END_SRC
 
 * File manager
-+I abandoned treemacs, looking for an alternative as we speak+
-I found an alternative, Sunrise Commander!
-I'm not changing much, just disabling the mouse and adding buttons.
-#+BEGIN_SRC emacs-lisp
-  (use-package sunrise-commander
-    :ensure t
-    :init
-      (use-package sunrise-x-buttons :ensure t)
-      (use-package sunrise-x-modeline :ensure t)
-      (setq sr-cursor-follows-mouse nil)
-      (define-key sr-mode-map [mouse-1] nil)
-      (define-key sr-mode-map [mouse-movement] nil)
-    :bind ("s-t" . sunrise))
-#+END_SRC
+Abandoning sunrise-commander.
+The repos are dead and I'm looking for something better anyway.
 
 * The terminal
 I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
