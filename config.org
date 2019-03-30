@@ -1075,31 +1075,23 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
 
 ** specific languages
 Be it for code or prose, completion is a must.
-After messing around with =auto-completion= for a while I decided to drop it
-in favor of =company=, and it turns out to have been a great decision.
+After messing around with =auto-completion= and =company= for a while I decided to .. use both?
+AC is for Lua/LÖVE and Company for the rest.
 
 Each category also has additional settings.
 
 *** c/c++
-**** yasnippet
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c++-mode-hook 'yas-minor-mode)
   (add-hook 'c-mode-hook 'yas-minor-mode)
-#+END_SRC
 
-**** flycheck
-#+BEGIN_SRC emacs-lisp
   (use-package flycheck-clang-analyzer
     :ensure t
     :config
     (with-eval-after-load 'flycheck
       (require 'flycheck-clang-analyzer)
        (flycheck-clang-analyzer-setup)))
-#+END_SRC
 
-**** company
-Requires libclang to be installed.
-#+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'company
     (add-hook 'c++-mode-hook 'company-mode)
     (add-hook 'c-mode-hook 'company-mode))
@@ -1123,17 +1115,10 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** python
-**** yasnippet
 #+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook 'yas-minor-mode)
-#+END_SRC
-
-**** flycheck
-#+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook 'flycheck-mode)
-#+END_SRC
-**** company
-#+BEGIN_SRC emacs-lisp
+
   (with-eval-after-load 'company
       (add-hook 'python-mode-hook 'company-mode))
 
@@ -1156,18 +1141,9 @@ Requires libclang to be installed.
 #+END_SRC
 
 *** emacs-lisp
-**** eldoc
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-#+END_SRC
-
-**** yasnippet
-#+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'yas-minor-mode)
-#+END_SRC
-
-**** company
-#+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'company-mode)
 
   (use-package slime
@@ -1183,54 +1159,10 @@ Requires libclang to be installed.
       (slime-setup '(slime-fancy slime-company)))
 #+END_SRC
 
-*** lua
-**** yasnippet
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'lua-mode-hook 'yas-minor-mode)
-#+END_SRC
-
-**** flycheck
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'lua-mode-hook 'flycheck-mode)
-#+END_SRC
-
-**** company
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'lua-mode-hook 'company-mode)
-
-  (defun custom-lua-repl-bindings ()
-    (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
-    (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer))
-
-  (defun lua-mode-company-init ()
-    (setq-local company-backends '((company-lua
-                                    company-etags
-                                    company-dabbrev-code))))
-
-  (use-package company-lua
-    :ensure t
-    :config
-      (require 'company)
-      (setq lua-indent-level 4)
-      (setq lua-indent-string-contents t)
-      (add-hook 'lua-mode-hook 'custom-lua-repl-bindings)
-      (add-hook 'lua-mode-hook 'lua-mode-company-init))
-#+END_SRC
-
 *** bash
-**** yasnippet
 #+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'yas-minor-mode)
-#+END_SRC
-
-**** flycheck
-#+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'flycheck-mode)
-
-#+END_SRC
-
-**** company
-#+BEGIN_SRC emacs-lisp
   (add-hook 'shell-mode-hook 'company-mode)
 
   (defun shell-mode-company-init ()
@@ -1244,6 +1176,60 @@ Requires libclang to be installed.
     :config
       (require 'company)
       (add-hook 'shell-mode-hook 'shell-mode-company-init))
+#+END_SRC
+
+*** lua/löve
+I must regrettably admit that =company= sucks with Lua/LÖVE.
+Which is also why I have =AC= now.
+I needed to do some shenanigans to get great auto-completion but here goes.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'lua-mode-hook 'yas-minor-mode)
+  (add-hook 'lua-mode-hook 'flycheck-mode)
+
+  ;;; this will download the necessary modules from git
+  (let (value)
+    (dolist (element '("love" "lua") value)
+      (unless (file-directory-p (concatenate 'string (getenv "HOME") "/.emacs.d/auto-complete-" element))
+        (shell-command (format "git clone %s %s" (concatenate 'string
+                                                              "https://github.com/rolpereira/auto-complete-" element ".el")
+                               (concatenate 'string (getenv "HOME") "/.emacs.d/auto-complete-" element) nil)))
+      (add-to-list 'load-path (expand-file-name (concatenate 'string "~/.emacs.d/auto-complete-" element)))))
+
+  (require 'auto-complete-love)
+  (require 'auto-complete-lua)
+
+  ;;; repl!
+  (add-hook 'lua-mode-hook '(lambda ()
+                              (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
+                              (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer)))
+
+  ;;; ac > company
+  (use-package auto-complete
+    :ensure t
+    :config
+    (setq ac-use-menu-map t)
+    (setq ac-ignore-case nil)
+    (define-key ac-menu-map "\C-n" 'ac-next)
+    (define-key ac-menu-map "\C-p" 'ac-previous))
+
+  ;;; this will be changed, it's good enough for now
+  (add-hook 'lua-mode-hook '(lambda ()
+                              (setq ac-sources '(ac-source-love
+                                                 ac-source-lua
+                                                 ac-source-abbrev
+                                                 ac-source-words-in-same-mode-buffers))
+                              (auto-complete-mode)))
+
+  (add-hook 'lua-mode-hook 'auto-complete-mode)
+
+  ;;; I don't even know all the functionality
+  (use-package love-minor-mode
+    :ensure t
+    :config
+    (add-hook 'lua-mode-hook 'love-minor-mode))
+
+  ;;; behold, perfection :°)
+  (global-set-key (kbd "<f9>") '(lambda () (interactive) (start-process "love-play-game" nil "love" default-directory)))
 #+END_SRC
 
 * Git integration
