@@ -1366,7 +1366,10 @@ Edit this list as you see fit!
     (diminish 'page-break-lines-mode)
     (diminish 'auto-revert-mode)
     (diminish 'rainbow-delimiters-mode)
-    (diminish 'rainbow-mode))
+    (diminish 'rainbow-mode)
+    (diminish 'yas-minor-mode)
+    (diminish 'flycheck-mode)
+    (diminish 'helm-mode))
 #+END_SRC
 
 * Instant messaging
