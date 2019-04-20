@@ -728,6 +728,7 @@ Doing =C-x k= should kill the current buffer at all times, we have =ibuffer= for
   (defun kill-current-buffer ()
     "Kills the current buffer."
     (interactive)
+    (save-some-buffers)
     (kill-buffer (current-buffer)))
   (global-set-key (kbd "C-x k") 'kill-current-buffer)
 #+END_SRC
